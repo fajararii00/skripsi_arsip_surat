@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 // pastikan hanya staf yang bisa akses
 if ($_SESSION['role'] != 'staf') {
@@ -62,7 +63,9 @@ $surat = mysqli_query($conn, $sql);
             <th>Instansi</th>
             <th>Kategori</th>
             <th>Perihal</th>
+            <th>Status</th>
             <th>File</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -76,6 +79,7 @@ $surat = mysqli_query($conn, $sql);
               <td><?= htmlspecialchars($row['instansi']); ?></td>
               <td><?= htmlspecialchars($row['kategori']); ?></td>
               <td><?= htmlspecialchars($row['perihal']); ?></td>
+              <td><?= statusBadge($row['status']); ?></td>
               <td>
                 <?php if($row['file_surat']): ?>
                   <a href="../assets/uploads/surat_keluar/<?= htmlspecialchars($row['file_surat']); ?>" 
@@ -84,11 +88,16 @@ $surat = mysqli_query($conn, $sql);
                   <span class="text-muted">-</span>
                 <?php endif; ?>
               </td>
+              <td>
+                <a href="../tracking.php?type=surat_keluar&id=<?= $row['id']; ?>" class="btn btn-sm btn-primary">
+                  <i class="fa fa-route"></i> Tracking
+                </a>
+              </td>
             </tr>
             <?php endwhile; ?>
           <?php else: ?>
             <tr>
-              <td colspan="8" class="text-center text-muted">Tidak ada data surat keluar.</td>
+              <td colspan="10" class="text-center text-muted">Tidak ada data surat keluar.</td>
             </tr>
           <?php endif; ?>
         </tbody>

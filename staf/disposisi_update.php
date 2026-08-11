@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 // pastikan hanya pimpinan
 if ($_SESSION['role'] != 'staf') { // karena role staf sudah kamu rename jadi pimpinan
@@ -29,6 +30,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                WHERE id = $id";
 
     if (mysqli_query($conn, $update)) {
+        if ($status != $data['status']) {
+            logStatus($conn, 'disposisi', $id, $status, $catatan_pimpinan ?: null);
+        }
         header("Location: disposisi.php");
         exit;
     } else {
@@ -52,9 +56,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="mb-3">
       <label class="form-label">Status</label>
       <select name="status" class="form-select" required>
-        <option value="pending" <?= $data['status']=='pending'?'selected':''; ?>>Pending</option>
-        <option value="proses" <?= $data['status']=='proses'?'selected':''; ?>>Proses</option>
-        <option value="selesai" <?= $data['status']=='selesai'?'selected':''; ?>>Selesai</option>
+        <?php foreach (getStatusSteps() as $key => $label): ?>
+          <option value="<?= $key; ?>" <?= $data['status'] == $key ? 'selected' : ''; ?>><?= $label; ?></option>
+        <?php endforeach; ?>
       </select>
     </div>
 

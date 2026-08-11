@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 $id = intval($_GET['id']);
 $result = mysqli_query($conn, "SELECT * FROM disposisi WHERE id=$id");
@@ -33,6 +34,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               WHERE id=$id";
 
     if (mysqli_query($conn, $query)) {
+        if ($status != $disposisi['status']) {
+            logStatus($conn, 'disposisi', $id, $status);
+        }
         header("Location: disposisi.php");
         exit;
     } else {
@@ -83,9 +87,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="mb-3">
       <label class="form-label">Status</label>
       <select name="status" class="form-select" required>
-        <option value="pending" <?= $disposisi['status']=='pending'?'selected':'' ?>>Pending</option>
-        <option value="proses" <?= $disposisi['status']=='proses'?'selected':'' ?>>Proses</option>
-        <option value="selesai" <?= $disposisi['status']=='selesai'?'selected':'' ?>>Selesai</option>
+        <?php foreach (getStatusSteps() as $key => $label): ?>
+          <option value="<?= $key; ?>" <?= $disposisi['status'] == $key ? 'selected' : ''; ?>><?= $label; ?></option>
+        <?php endforeach; ?>
       </select>
     </div>
 

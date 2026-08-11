@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 // Pastikan hanya staf yang bisa akses
 if ($_SESSION['role'] != 'staf') {
@@ -13,8 +14,8 @@ $nama    = $_SESSION['nama'];
 
 // Hitung disposisi untuk staf ini
 $total_disposisi = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM disposisi WHERE penerima_id='$user_id'"))['jml'];
-$pending         = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM disposisi WHERE penerima_id='$user_id' AND status='pending'"))['jml'];
-$proses          = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM disposisi WHERE penerima_id='$user_id' AND status='proses'"))['jml'];
+$pending         = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM disposisi WHERE penerima_id='$user_id' AND status IN ('draft','menunggu_verifikasi')"))['jml'];
+$proses          = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM disposisi WHERE penerima_id='$user_id' AND status IN ('terverifikasi','diproses_kasi_pais')"))['jml'];
 $selesai         = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM disposisi WHERE penerima_id='$user_id' AND status='selesai'"))['jml'];
 ?>
 
@@ -87,13 +88,7 @@ $selesai         = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jm
             <td><?= htmlspecialchars($row['tgl_disposisi']); ?></td>
             <td><?= nl2br(htmlspecialchars($row['instruksi'])); ?></td>
             <td>
-              <?php if($row['status'] == 'pending'): ?>
-                <span class="badge bg-warning text-dark">Pending</span>
-              <?php elseif($row['status'] == 'proses'): ?>
-                <span class="badge bg-info">Proses</span>
-              <?php else: ?>
-                <span class="badge bg-success">Selesai</span>
-              <?php endif; ?>
+              <?= statusBadge($row['status']); ?>
             </td>
           </tr>
           <?php endwhile; ?>

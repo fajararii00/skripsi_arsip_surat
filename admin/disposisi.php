@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 // Ambil kata kunci pencarian
 $q = isset($_GET['q']) ? mysqli_real_escape_string($conn, $_GET['q']) : "";
@@ -104,16 +105,13 @@ $disposisi = mysqli_query($conn, $query);
         <td><?= nl2br(htmlspecialchars($row['instruksi'])); ?></td>
         <td><?= nl2br(htmlspecialchars($row['catatan_pimpinan'] ?? '-')); ?></td> <!-- tampilkan catatan -->
         <td>
-          <?php if($row['status'] == 'pending'): ?>
-            <span class="badge bg-warning text-dark">Pending</span>
-          <?php elseif($row['status'] == 'proses'): ?>
-            <span class="badge bg-primary">Proses</span>
-          <?php else: ?>
-            <span class="badge bg-success">Selesai</span>
-          <?php endif; ?>
+          <?= statusBadge($row['status']); ?>
         </td>
         <td>
           <?php if ($_SESSION['role'] == 'admin'): ?>
+            <a href="../tracking.php?type=disposisi&id=<?= $row['id']; ?>" class="btn btn-sm btn-primary">
+              <i class="fa fa-route"></i> Tracking
+            </a>
             <a href="disposisi_edit.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-warning">
               <i class="fa fa-edit"></i> Edit
             </a>

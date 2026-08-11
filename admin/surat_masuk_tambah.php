@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 $msg = "";
 
@@ -12,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $instansi     = mysqli_real_escape_string($conn, $_POST['instansi']);
     $kategori     = mysqli_real_escape_string($conn, $_POST['kategori']);
     $perihal      = mysqli_real_escape_string($conn, $_POST['perihal']);
+    $status       = "draft";
     
     // Upload file
     $file_name = null;
@@ -30,10 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!$msg) {
         $query = "INSERT INTO surat_masuk 
-                  (no_surat, tgl_surat, tgl_diterima, pengirim, instansi, kategori, perihal, file_surat) 
+                  (no_surat, tgl_surat, tgl_diterima, pengirim, instansi, kategori, perihal, file_surat, status) 
                   VALUES 
-                  ('$no_surat','$tgl_surat','$tgl_diterima','$pengirim','$instansi','$kategori','$perihal','$file_name')";
+                  ('$no_surat','$tgl_surat','$tgl_diterima','$pengirim','$instansi','$kategori','$perihal','$file_name','$status')";
         if (mysqli_query($conn, $query)) {
+            $new_id = mysqli_insert_id($conn);
+            logStatus($conn, 'surat_masuk', $new_id, $status, 'Surat diterima');
             header("Location: surat_masuk.php");
             exit;
         } else {

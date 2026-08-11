@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 $msg = "";
 
@@ -24,6 +25,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               VALUES ('$surat_masuk_id','$pengirim_id','$penerima_id','$catatan','$tgl_disposisi','$status')";
     
     if (mysqli_query($conn, $query)) {
+        $new_id = mysqli_insert_id($conn);
+        logStatus($conn, 'disposisi', $new_id, $status, 'Disposisi dibuat');
         header("Location: disposisi.php");
         exit;
     } else {
@@ -72,9 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="mb-3">
       <label class="form-label">Status</label>
       <select name="status" class="form-select" required>
-        <option value="pending">Pending</option>
-        <option value="proses">Proses</option>
-        <option value="selesai">Selesai</option>
+        <?php foreach (getStatusSteps() as $key => $label): ?>
+          <option value="<?= $key; ?>"><?= $label; ?></option>
+        <?php endforeach; ?>
       </select>
     </div>
 

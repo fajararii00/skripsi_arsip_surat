@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 $id = intval($_GET['id']);
 $result = mysqli_query($conn, "SELECT * FROM surat_masuk WHERE id=$id");
@@ -16,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $instansi     = mysqli_real_escape_string($conn, $_POST['instansi']);
     $kategori     = mysqli_real_escape_string($conn, $_POST['kategori']);
     $perihal      = mysqli_real_escape_string($conn, $_POST['perihal']);
+    $status       = mysqli_real_escape_string($conn, $_POST['status']);
 
     // Jika ada file baru
     if (!empty($_FILES['file_surat']['name'])) {
@@ -43,10 +45,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     pengirim='$pengirim',
                     instansi='$instansi',
                     kategori='$kategori',
-                    perihal='$perihal'
+                    perihal='$perihal',
+                    status='$status'
                     $update_file
                   WHERE id=$id";
         if (mysqli_query($conn, $query)) {
+            if ($status != $surat['status']) {
+                logStatus($conn, 'surat_masuk', $id, $status);
+            }
             header("Location: surat_masuk.php");
             exit;
         } else {
@@ -89,6 +95,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="mb-3">
       <label>Perihal</label>
       <textarea name="perihal" class="form-control" required><?= htmlspecialchars($surat['perihal']); ?></textarea>
+    </div>
+    <div class="mb-3">
+      <label>Status</label>
+      <select name="status" class="form-select">
+        <?php foreach (getStatusSteps() as $key => $label): ?>
+          <option value="<?= $key; ?>" <?= $surat['status'] == $key ? 'selected' : ''; ?>><?= $label; ?></option>
+        <?php endforeach; ?>
+      </select>
     </div>
     <div class="mb-3">
       <label>File Surat</label>

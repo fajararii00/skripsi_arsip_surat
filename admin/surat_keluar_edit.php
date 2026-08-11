@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 // hanya admin yang boleh akses
 requireRole(['admin']);
@@ -61,6 +62,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $update_file
                   WHERE id=$id";
         if (mysqli_query($conn, $query)) {
+            if ($status != $surat['status']) {
+                logStatus($conn, 'surat_keluar', $id, $status);
+            }
             header("Location: surat_keluar.php");
             exit;
         } else {
@@ -112,10 +116,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="mb-3">
       <label>Status</label>
       <select name="status" class="form-control">
-        <option value="draft" <?= $surat['status']=='draft'?'selected':''; ?>>Draft</option>
-        <option value="menunggu" <?= $surat['status']=='menunggu'?'selected':''; ?>>Menunggu</option>
-        <option value="disetujui" <?= $surat['status']=='disetujui'?'selected':''; ?>>Disetujui</option>
-        <option value="dikirim" <?= $surat['status']=='dikirim'?'selected':''; ?>>Dikirim</option>
+        <?php foreach (getStatusSteps() as $key => $label): ?>
+          <option value="<?= $key; ?>" <?= $surat['status'] == $key ? 'selected' : ''; ?>><?= $label; ?></option>
+        <?php endforeach; ?>
       </select>
     </div>
     <div class="mb-3">
