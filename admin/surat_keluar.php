@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 // Ambil kata kunci pencarian
 $q = isset($_GET['q']) ? mysqli_real_escape_string($conn, $_GET['q']) : "";
@@ -79,17 +80,7 @@ $surat = mysqli_query($conn, $sql);
               <td><span class="badge bg-info"><?= htmlspecialchars($row['kategori']); ?></span></td>
               <td><?= htmlspecialchars($row['perihal']); ?></td>
               <td>
-                <?php if($row['status'] == 'draft'): ?>
-                  <span class="badge bg-secondary">Draft</span>
-                <?php elseif($row['status'] == 'menunggu'): ?>
-                  <span class="badge bg-warning text-dark">Menunggu</span>
-                <?php elseif($row['status'] == 'disetujui'): ?>
-                  <span class="badge bg-info text-dark">Disetujui</span>
-                <?php elseif($row['status'] == 'dikirim'): ?>
-                  <span class="badge bg-success">Dikirim</span>
-                <?php else: ?>
-                  <span class="badge bg-dark">-</span>
-                <?php endif; ?>
+                <?= statusBadge($row['status']); ?>
               </td>
               <td>
                 <?php if($row['file_surat']): ?>
@@ -100,6 +91,9 @@ $surat = mysqli_query($conn, $sql);
                 <?php endif; ?>
               </td>
               <td>
+                <a href="../tracking.php?type=surat_keluar&id=<?= $row['id']; ?>" class="btn btn-sm btn-primary">
+                  <i class="fa fa-route"></i> Tracking
+                </a>
                 <a href="surat_keluar_edit.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-warning">
                   <i class="fa fa-edit"></i> Edit
                 </a>

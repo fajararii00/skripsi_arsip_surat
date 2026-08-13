@@ -20,8 +20,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'staf') {
     body { background-color: #f9fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .navbar-custom { background: linear-gradient(90deg, #4e73df, #1cc88a); }
     .navbar-brand { font-weight: bold; letter-spacing: 1px; color: #fff !important; }
-    .nav-link { color: #f8f9fc !important; margin-right: 10px; }
-    .nav-link.active, .nav-link:hover { font-weight: bold; color: #fff !important; }
+    .navbar .nav-link { color: #f8f9fc !important; margin-right: 10px; }
+    .navbar .nav-link.active, .navbar .nav-link:hover { font-weight: bold; color: #fff !important; }
   </style>
 </head>
 <body>

@@ -12,7 +12,7 @@ $nama = $_SESSION['nama'];
 
 // Hitung surat
 $total_masuk = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM surat_masuk"))['jml'];
-$total_keluar = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM surat_keluar WHERE status='dikirim' OR status='disetujui'"))['jml'];
+$total_keluar = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM surat_keluar WHERE status IN ('terverifikasi','diproses_kasi_pais','selesai')"))['jml'];
 ?>
 
 <?php include "../includes/header_user.php"; ?>

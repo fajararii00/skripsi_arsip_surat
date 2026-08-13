@@ -24,6 +24,44 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `status_history`
+--
+
+CREATE TABLE `status_history` (
+  `id` int(11) NOT NULL,
+  `ref_type` enum('surat_keluar','surat_masuk','disposisi') NOT NULL,
+  `ref_id` int(11) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `updated_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `status_history`
+--
+
+INSERT INTO `status_history` (`id`, `ref_type`, `ref_id`, `status`, `keterangan`, `updated_by`, `created_at`) VALUES
+(1, 'surat_keluar', 4, 'draft', 'Status awal', 1, '2026-03-07 12:35:51'),
+(2, 'surat_keluar', 6, 'draft', 'Status awal', 1, '2026-04-23 05:10:05'),
+(3, 'surat_keluar', 7, 'draft', 'Status awal', 1, '2026-04-23 06:18:19'),
+(4, 'surat_keluar', 8, 'draft', 'Status awal', 1, '2026-04-23 06:25:34'),
+(5, 'surat_keluar', 9, 'draft', 'Status awal', 1, '2026-04-23 06:28:05'),
+(6, 'surat_masuk', 6, 'draft', 'Status awal', NULL, '2026-03-07 12:33:24'),
+(7, 'surat_masuk', 7, 'draft', 'Status awal', NULL, '2026-04-23 05:07:04'),
+(8, 'surat_masuk', 8, 'draft', 'Status awal', NULL, '2026-04-23 06:15:57'),
+(9, 'surat_masuk', 9, 'draft', 'Status awal', NULL, '2026-04-23 06:19:55'),
+(10, 'surat_masuk', 10, 'draft', 'Status awal', NULL, '2026-04-23 06:26:37'),
+(11, 'surat_masuk', 11, 'draft', 'Status awal', NULL, '2026-07-22 04:06:05'),
+(12, 'disposisi', 5, 'selesai', 'Status awal', 1, '2026-05-01 12:35:31'),
+(13, 'disposisi', 6, 'selesai', 'Status awal', 1, '2026-05-01 12:35:58'),
+(14, 'disposisi', 7, 'selesai', 'Status awal', 1, '2026-05-01 12:36:55'),
+(15, 'disposisi', 8, 'diproses_kasi_pais', 'Status awal', 1, '2026-05-01 12:37:24'),
+(16, 'disposisi', 9, 'draft', 'Status awal', 1, '2026-05-01 12:37:49');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `disposisi`
 --
 
@@ -35,7 +73,7 @@ CREATE TABLE `disposisi` (
   `tgl_disposisi` date DEFAULT NULL,
   `instruksi` text DEFAULT NULL,
   `catatan_pimpinan` text DEFAULT NULL,
-  `status` enum('pending','proses','selesai') DEFAULT 'pending',
+  `status` enum('draft','menunggu_verifikasi','terverifikasi','diproses_kasi_pais','selesai') DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -48,8 +86,8 @@ INSERT INTO `disposisi` (`id`, `surat_masuk_id`, `pengirim_id`, `penerima_id`, `
 (5, 7, 1, 2, '2026-04-01', '', NULL, 'selesai', '2026-05-01 12:35:31', '2026-05-01 12:35:31'),
 (6, 6, 1, 2, '2026-04-10', '', NULL, 'selesai', '2026-05-01 12:35:58', '2026-05-01 12:35:58'),
 (7, 8, 1, 2, '2026-06-25', '', NULL, 'selesai', '2026-05-01 12:36:55', '2026-05-01 12:36:55'),
-(8, 10, 1, 2, '2026-04-27', '', NULL, 'proses', '2026-05-01 12:37:24', '2026-05-01 12:37:24'),
-(9, 9, 1, 2, '2026-04-30', '', NULL, 'pending', '2026-05-01 12:37:49', '2026-05-01 12:37:49');
+(8, 10, 1, 2, '2026-04-27', '', NULL, 'diproses_kasi_pais', '2026-05-01 12:37:24', '2026-05-01 12:37:24'),
+(9, 9, 1, 2, '2026-04-30', '', NULL, 'draft', '2026-05-01 12:37:49', '2026-05-01 12:37:49');
 
 -- --------------------------------------------------------
 
@@ -70,7 +108,7 @@ CREATE TABLE `surat_keluar` (
   `file_surat` varchar(255) DEFAULT NULL,
   `pembuat_id` int(11) DEFAULT NULL,
   `penyetuju_id` int(11) DEFAULT NULL,
-  `status` enum('draft','menunggu','disetujui','dikirim') DEFAULT 'draft',
+  `status` enum('draft','menunggu_verifikasi','terverifikasi','diproses_kasi_pais','selesai') DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -102,7 +140,7 @@ CREATE TABLE `surat_masuk` (
   `perihal` varchar(255) DEFAULT NULL,
   `kategori` varchar(100) DEFAULT NULL,
   `file_surat` varchar(255) DEFAULT NULL,
-  `status` enum('baru','didisposisikan','selesai') DEFAULT 'baru',
+  `status` enum('draft','menunggu_verifikasi','terverifikasi','diproses_kasi_pais','selesai') DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -146,6 +184,14 @@ INSERT INTO `users` (`id`, `nama`, `email`, `password`, `role`, `created_at`) VA
 --
 
 --
+-- Indexes for table `status_history`
+--
+ALTER TABLE `status_history`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ref_type` (`ref_type`,`ref_id`),
+  ADD KEY `updated_by` (`updated_by`);
+
+--
 -- Indexes for table `disposisi`
 --
 ALTER TABLE `disposisi`
@@ -181,6 +227,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `status_history`
+--
+ALTER TABLE `status_history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
 -- AUTO_INCREMENT for table `disposisi`
 --
 ALTER TABLE `disposisi`
@@ -207,6 +259,12 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `status_history`
+--
+ALTER TABLE `status_history`
+  ADD CONSTRAINT `status_history_ibfk_1` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `disposisi`

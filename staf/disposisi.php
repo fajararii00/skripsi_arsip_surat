@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 include "../includes/header_staf.php";
 
 // Pastikan hanya staf
@@ -92,15 +93,13 @@ $disposisi = mysqli_query($conn, $query);
               <td><?= htmlspecialchars($row['pengirim']); ?></td>
               <td><?= nl2br(htmlspecialchars($row['instruksi'])); ?></td>
               <td>
-                <?php if($row['status'] == 'pending'): ?>
-                  <span class="badge bg-warning text-dark">Pending</span>
-                <?php elseif($row['status'] == 'proses'): ?>
-                  <span class="badge bg-primary">Proses</span>
-                <?php else: ?>
-                  <span class="badge bg-success">Selesai</span>
-                <?php endif; ?>
+                <?= statusBadge($row['status']); ?>
               </td>
               <td>
+                <a href="../tracking.php?type=disposisi&id=<?= $row['id']; ?>" 
+                   class="btn btn-sm btn-primary">
+                   <i class="fa fa-route"></i> Tracking
+                </a>
                 <a href="disposisi_update.php?id=<?= $row['id']; ?>" 
                    class="btn btn-sm btn-success">
                    <i class="fa fa-edit"></i> Update Status

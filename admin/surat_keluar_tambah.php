@@ -1,6 +1,7 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/tracking.php";
 
 // admin dan staf boleh tambah
 requireRole(['admin','staf']);
@@ -40,6 +41,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                  ('$no_agenda','$no_surat','$tgl_surat','$tujuan','$instansi','$kategori','$perihal','$isi_surat','$file_name','$pembuat_id','$status')";
         
         if (mysqli_query($conn, $query)) {
+            $new_id = mysqli_insert_id($conn);
+            logStatus($conn, 'surat_keluar', $new_id, $status, 'Surat dibuat');
             header("Location: surat_keluar.php");
             exit;
         } else {

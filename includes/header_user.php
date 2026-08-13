@@ -14,8 +14,8 @@ if (session_status() == PHP_SESSION_NONE) {
     body { background-color: #f9fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .navbar-custom { background: linear-gradient(90deg, #17a2b8, #28a745); }
     .navbar-brand { font-weight: bold; color: #fff !important; }
-    .nav-link { color: #f8f9fc !important; }
-    .nav-link.active, .nav-link:hover { font-weight: bold; color: #fff !important; }
+    .navbar .nav-link { color: #f8f9fc !important; }
+    .navbar .nav-link.active, .navbar .nav-link:hover { font-weight: bold; color: #fff !important; }
   </style>
 </head>
 <body>
