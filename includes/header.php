@@ -20,8 +20,8 @@ if (!isset($_SESSION['user_id'])) {
     body { background-color: #f9fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .navbar-custom { background: linear-gradient(90deg, #4e73df, #1cc88a); }
     .navbar-brand { font-weight: bold; letter-spacing: 1px; color: #fff !important; }
-    .nav-link { color: #f8f9fc !important; margin-right: 10px; }
-    .nav-link.active, .nav-link:hover { font-weight: bold; color: #fff !important; }
+    .navbar .nav-link { color: #f8f9fc !important; margin-right: 10px; }
+    .navbar .nav-link.active, .navbar .nav-link:hover { font-weight: bold; color: #fff !important; }
   </style>
 </head>
 
@@ -43,6 +43,7 @@ if (!isset($_SESSION['user_id'])) {
         <li class="nav-item"><a class="nav-link <?= basename($_SERVER['PHP_SELF'])=='surat_masuk.php'?'active':'' ?>" href="surat_masuk.php">Surat Masuk</a></li>
         <li class="nav-item"><a class="nav-link <?= basename($_SERVER['PHP_SELF'])=='surat_keluar.php'?'active':'' ?>" href="surat_keluar.php">Surat Keluar</a></li>
         <li class="nav-item"><a class="nav-link <?= basename($_SERVER['PHP_SELF'])=='disposisi.php'?'active':'' ?>" href="disposisi.php">Disposisi</a></li>
+        <li class="nav-item"><a class="nav-link <?= basename($_SERVER['PHP_SELF'])=='laporan.php'?'active':'' ?>" href="laporan.php">Laporan</a></li>
         <?php if ($_SESSION['role'] == 'admin'): ?>
           <li class="nav-item"><a class="nav-link <?= basename($_SERVER['PHP_SELF'])=='users.php'?'active':'' ?>" href="users.php">Manajemen User</a></li>
         <?php endif; ?>
