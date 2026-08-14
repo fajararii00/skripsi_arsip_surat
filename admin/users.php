@@ -152,5 +152,4 @@ $users = mysqli_query($conn, $sql);
   </div>
 </div>
 
-</body>
-</html>
+<?php include "../includes/footer.php"; ?>
