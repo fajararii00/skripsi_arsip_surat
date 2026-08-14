@@ -18,6 +18,7 @@
   max-height: 68vh;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
+  padding-top: 0;
 }
 
 /* --- Judul halaman (h3) --- */
@@ -44,14 +45,18 @@
   border-collapse: separate;
   border-spacing: 0;
   border-radius: .75rem;
-  overflow: hidden;
   margin-bottom: 0;
   background-color: #fff;
 }
 
 /* Kepala tabel */
-.table.table-bordered.table-striped thead th {
+.table.table-bordered.table-striped thead {
   background: linear-gradient(135deg, #4e73df 0%, #1cc88a 100%) !important;
+}
+
+.table.table-bordered.table-striped thead th {
+  background-color: #4e73df !important;
+  background-image: linear-gradient(135deg, #4e73df 0%, #1cc88a 100%);
   color: #fff !important;
   font-weight: 600;
   font-size: .72rem;
@@ -63,7 +68,7 @@
   vertical-align: middle;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 3;
 }
 
 .table.table-bordered.table-striped thead th:first-child {
@@ -72,6 +77,14 @@
 
 .table.table-bordered.table-striped thead th:last-child {
   border-top-right-radius: .75rem;
+}
+
+.table.table-bordered.table-striped tbody tr:last-child td:first-child {
+  border-bottom-left-radius: .75rem;
+}
+
+.table.table-bordered.table-striped tbody tr:last-child td:last-child {
+  border-bottom-right-radius: .75rem;
 }
 
 /* Sel isi tabel */
