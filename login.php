@@ -31,11 +31,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($user['role'] == 'admin') {
                 header("Location: admin/index.php");
                 exit;
-            } elseif ($user['role'] == 'staf') {
-                header("Location: staf/index.php");
+            } elseif ($user['role'] == 'pimpinan') {
+                header("Location: pimpinan/index.php");
                 exit;
-            }elseif ($user['role'] == 'user') {
-                header("Location: user/index.php");
+            }elseif ($user['role'] == 'tata_usaha') {
+                header("Location: tata_usaha/index.php");
                 exit;
             } else {
                 header("Location: login.php"); // fallback kalau role tidak dikenali

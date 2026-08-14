@@ -4,12 +4,12 @@ include "../includes/db.php";
 include "../includes/tracking.php";
 
 // pastikan hanya staf yang bisa akses
-if ($_SESSION['role'] != 'staf') {
+if ($_SESSION['role'] != 'pimpinan') {
     header("Location: ../login.php");
     exit;
 }
 
-include "../includes/header_staf.php"; // navbar staf
+include "../includes/header_pimpinan.php"; // navbar pimpinan
 
 // Ambil kata kunci pencarian
 $q = isset($_GET['q']) ? mysqli_real_escape_string($conn, $_GET['q']) : "";
@@ -43,7 +43,7 @@ $surat = mysqli_query($conn, $sql);
         <i class="fa fa-search"></i>
       </button>
 
-      <a href="staf_export.php?type=surat_masuk" class="btn btn-sm btn-success">
+      <a href="pimpinan_export.php?type=surat_masuk" class="btn btn-sm btn-success">
             <i class="fa fa-download"></i>
           </a>
     </form>
@@ -89,6 +89,9 @@ $surat = mysqli_query($conn, $sql);
                 <?php endif; ?>
               </td>
               <td>
+                <a href="disposisi_tambah.php?surat_id=<?= $row['id']; ?>" class="btn btn-sm btn-success">
+                  <i class="fa fa-paper-plane"></i> Beri Disposisi
+                </a>
                 <a href="../tracking.php?type=surat_masuk&id=<?= $row['id']; ?>" class="btn btn-sm btn-primary">
                   <i class="fa fa-route"></i> Tracking
                 </a>

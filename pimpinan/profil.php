@@ -1,6 +1,8 @@
 <?php
 include "../includes/auth.php";
 include "../includes/db.php";
+include "../includes/header_pimpinan.php";
+
 
 // Ambil data user login
 $user_id = $_SESSION['user_id'];
@@ -29,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<?php include "../includes/header.php"; ?>
+
 
 <div class="container mt-4">
   <div class="row justify-content-center">

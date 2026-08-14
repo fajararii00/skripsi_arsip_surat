@@ -3,8 +3,8 @@ include "../includes/auth.php";
 include "../includes/db.php";
 include "../includes/tracking.php";
 
-// Hanya admin yang boleh akses laporan
-requireRole(['admin']);
+// Hanya admin & pimpinan yang boleh akses laporan
+requireRole(['admin','pimpinan']);
 
 // Tentukan jenis laporan
 $jenis = isset($_GET['jenis']) && in_array($_GET['jenis'], ['surat_masuk', 'surat_keluar', 'disposisi']) ? $_GET['jenis'] : 'surat_masuk';
@@ -97,7 +97,13 @@ if ($jenis == 'disposisi') {
 }
 ?>
 
-<?php include "../includes/header.php"; ?>
+<?php
+if ($_SESSION['role'] == 'pimpinan') {
+    include "../includes/header_pimpinan.php";
+} else {
+    include "../includes/header.php";
+}
+?>
 
 <style>
   @media print {

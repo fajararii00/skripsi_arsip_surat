@@ -2,8 +2,8 @@
 include "../includes/auth.php";
 include "../includes/db.php";
 
-// pastikan role staf
-if ($_SESSION['role'] != 'staf') {
+// pastikan role pimpinan
+if ($_SESSION['role'] != 'pimpinan') {
     header("Location: ../login.php");
     exit;
 }
@@ -64,14 +64,14 @@ switch ($type) {
 
     case "disposisi":
         fputcsv($output, ["No", "No Surat", "Perihal", "Pengirim", "Penerima", "Tanggal Disposisi", "Instruksi", "Status"]);
-        $user_id = $_SESSION['user_id']; // hanya disposisi untuk staf login
+        $user_id = $_SESSION['user_id']; // hanya disposisi yang dibuat pimpinan login
         $query = "
           SELECT d.*, sm.no_surat, sm.perihal, u1.nama AS pengirim, u2.nama AS penerima
           FROM disposisi d
           JOIN surat_masuk sm ON d.surat_masuk_id = sm.id
           JOIN users u1 ON d.pengirim_id = u1.id
           JOIN users u2 ON d.penerima_id = u2.id
-          WHERE d.penerima_id = '$user_id'
+          WHERE d.pengirim_id = '$user_id'
           ORDER BY d.created_at DESC
         ";
         $result = mysqli_query($conn, $query);

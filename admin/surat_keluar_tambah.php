@@ -3,8 +3,8 @@ include "../includes/auth.php";
 include "../includes/db.php";
 include "../includes/tracking.php";
 
-// admin dan staf boleh tambah
-requireRole(['admin','staf']);
+// hanya admin yang boleh akses (tata usaha punya halaman sendiri)
+requireRole(['admin']);
 
 $msg = "";
 

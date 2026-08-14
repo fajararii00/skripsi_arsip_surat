@@ -56,7 +56,7 @@ INSERT INTO `status_history` (`id`, `ref_type`, `ref_id`, `status`, `keterangan`
 (12, 'disposisi', 5, 'selesai', 'Status awal', 1, '2026-05-01 12:35:31'),
 (13, 'disposisi', 6, 'selesai', 'Status awal', 1, '2026-05-01 12:35:58'),
 (14, 'disposisi', 7, 'selesai', 'Status awal', 1, '2026-05-01 12:36:55'),
-(15, 'disposisi', 8, 'diproses_kasi_pais', 'Status awal', 1, '2026-05-01 12:37:24'),
+(15, 'disposisi', 8, 'diproses_tata_usaha', 'Status awal', 1, '2026-05-01 12:37:24'),
 (16, 'disposisi', 9, 'draft', 'Status awal', 1, '2026-05-01 12:37:49');
 
 -- --------------------------------------------------------
@@ -73,7 +73,7 @@ CREATE TABLE `disposisi` (
   `tgl_disposisi` date DEFAULT NULL,
   `instruksi` text DEFAULT NULL,
   `catatan_pimpinan` text DEFAULT NULL,
-  `status` enum('draft','menunggu_verifikasi','terverifikasi','diproses_kasi_pais','selesai') DEFAULT 'draft',
+  `status` enum('draft','menunggu_verifikasi','terverifikasi','diproses_tata_usaha','selesai') DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -86,7 +86,7 @@ INSERT INTO `disposisi` (`id`, `surat_masuk_id`, `pengirim_id`, `penerima_id`, `
 (5, 7, 1, 2, '2026-04-01', '', NULL, 'selesai', '2026-05-01 12:35:31', '2026-05-01 12:35:31'),
 (6, 6, 1, 2, '2026-04-10', '', NULL, 'selesai', '2026-05-01 12:35:58', '2026-05-01 12:35:58'),
 (7, 8, 1, 2, '2026-06-25', '', NULL, 'selesai', '2026-05-01 12:36:55', '2026-05-01 12:36:55'),
-(8, 10, 1, 2, '2026-04-27', '', NULL, 'diproses_kasi_pais', '2026-05-01 12:37:24', '2026-05-01 12:37:24'),
+(8, 10, 1, 2, '2026-04-27', '', NULL, 'diproses_tata_usaha', '2026-05-01 12:37:24', '2026-05-01 12:37:24'),
 (9, 9, 1, 2, '2026-04-30', '', NULL, 'draft', '2026-05-01 12:37:49', '2026-05-01 12:37:49');
 
 -- --------------------------------------------------------
@@ -108,7 +108,7 @@ CREATE TABLE `surat_keluar` (
   `file_surat` varchar(255) DEFAULT NULL,
   `pembuat_id` int(11) DEFAULT NULL,
   `penyetuju_id` int(11) DEFAULT NULL,
-  `status` enum('draft','menunggu_verifikasi','terverifikasi','diproses_kasi_pais','selesai') DEFAULT 'draft',
+  `status` enum('draft','menunggu_verifikasi','terverifikasi','diproses_tata_usaha','selesai') DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -140,7 +140,7 @@ CREATE TABLE `surat_masuk` (
   `perihal` varchar(255) DEFAULT NULL,
   `kategori` varchar(100) DEFAULT NULL,
   `file_surat` varchar(255) DEFAULT NULL,
-  `status` enum('draft','menunggu_verifikasi','terverifikasi','diproses_kasi_pais','selesai') DEFAULT 'draft',
+  `status` enum('draft','menunggu_verifikasi','terverifikasi','diproses_tata_usaha','selesai') DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -177,7 +177,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `nama`, `email`, `password`, `role`, `created_at`) VALUES
 (1, 'Administrator', 'admin@mail.com', '$2y$10$igdZUclp2zFd7cYGRJG0veopvBNrzD/bcOpELXswkNMtsBL4ZltNu', 'admin', '2025-09-05 04:28:12'),
-(2, 'Fajar', 'fajar@gmail.com', '$2y$10$t/.QsGLolVQMxO4XRqZ3FOuuxVlxZkfHSW9DBRhJJfUmyl92KUU2C', 'staf', '2025-09-05 16:22:03');
+(2, 'Fajar', 'fajar@gmail.com', '$2y$10$t/.QsGLolVQMxO4XRqZ3FOuuxVlxZkfHSW9DBRhJJfUmyl92KUU2C', 'pimpinan', '2025-09-05 16:22:03'),
+(3, 'Tata Usaha', 'tatausaha@mail.com', '$2y$12$F1Il8obtikbpnoC0EvGeE.7GHcxMrBY60kS1fbP/Z1eXRet9Yqb2O', 'tata_usaha', '2026-08-14 00:00:00');
 
 --
 -- Indexes for dumped tables
@@ -271,15 +272,15 @@ ALTER TABLE `status_history`
 --
 ALTER TABLE `disposisi`
   ADD CONSTRAINT `disposisi_ibfk_1` FOREIGN KEY (`surat_masuk_id`) REFERENCES `surat_masuk` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `disposisi_ibfk_2` FOREIGN KEY (`pengirim_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `disposisi_ibfk_3` FOREIGN KEY (`penerima_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `disposisi_ibfk_2` FOREIGN KEY (`pengirim_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `disposisi_ibfk_3` FOREIGN KEY (`penerima_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `surat_keluar`
 --
 ALTER TABLE `surat_keluar`
-  ADD CONSTRAINT `surat_keluar_ibfk_1` FOREIGN KEY (`pembuat_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `surat_keluar_ibfk_2` FOREIGN KEY (`penyetuju_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `surat_keluar_ibfk_1` FOREIGN KEY (`pembuat_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `surat_keluar_ibfk_2` FOREIGN KEY (`penyetuju_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -50,12 +50,6 @@ $disposisi = mysqli_query($conn, $query);
 
   <!-- Tombol tambah & search -->
   <div class="d-flex justify-content-between mb-3">
-    <?php if ($_SESSION['role'] == 'admin'): ?>
-      <a href="disposisi_tambah.php" class="btn btn-success btn-sm mb-3">
-        <i class="fa fa-plus"></i> Tambah Disposisi
-      </a>
-
-    <?php endif; ?>
     <form class="d-flex mb-3" method="get" action="">
       <div class="input-group" style="max-width: 400px;">
         <input type="text" name="q" value="<?= htmlspecialchars($q ?? ""); ?>" 

@@ -52,8 +52,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <label class="form-label">Role</label>
       <select name="role" class="form-control" required>
         <option value="admin" <?= $user['role']=='admin'?'selected':''; ?>>Admin</option>
-        <option value="staf" <?= $user['role']=='staf'?'selected':''; ?>>Staf</option>
-        <option value="user" <?= $user['role']=='user'?'selected':''; ?>>User</option>
+        <option value="pimpinan" <?= $user['role']=='pimpinan'?'selected':''; ?>>Pimpinan</option>
+        <option value="tata_usaha" <?= $user['role']=='tata_usaha'?'selected':''; ?>>Tata Usaha</option>
       </select>
     </div>
     <button type="submit" class="btn btn-primary">Update</button>

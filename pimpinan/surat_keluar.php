@@ -4,12 +4,12 @@ include "../includes/db.php";
 include "../includes/tracking.php";
 
 // pastikan hanya staf yang bisa akses
-if ($_SESSION['role'] != 'staf') {
+if ($_SESSION['role'] != 'pimpinan') {
     header("Location: ../login.php");
     exit;
 }
 
-include "../includes/header_staf.php"; // navbar staf
+include "../includes/header_pimpinan.php"; // navbar pimpinan
 
 // Ambil kata kunci pencarian
 $q = isset($_GET['q']) ? mysqli_real_escape_string($conn, $_GET['q']) : "";
@@ -45,7 +45,7 @@ $surat = mysqli_query($conn, $sql);
       </button>
 
       <!-- Tombol Unduh CSV -->
-      <a href="staf_export.php?type=surat_keluar" class="btn btn-sm btn-success">
+      <a href="pimpinan_export.php?type=surat_keluar" class="btn btn-sm btn-success">
             <i class="fa fa-download"></i>
           </a>
     </form>

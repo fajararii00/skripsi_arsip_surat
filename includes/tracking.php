@@ -12,7 +12,7 @@ function getStatusSteps() {
         'draft'                 => 'Draft',
         'menunggu_verifikasi'   => 'Menunggu Verifikasi',
         'terverifikasi'         => 'Terverifikasi',
-        'diproses_kasi_pais'    => 'Diproses Kasi PAIS',
+        'diproses_tata_usaha'   => 'Diproses Tata Usaha',
         'selesai'               => 'Selesai',
     ];
 }
@@ -29,7 +29,7 @@ function getStatusColor($status) {
         'draft'                 => 'secondary',
         'menunggu_verifikasi'   => 'warning',
         'terverifikasi'         => 'info',
-        'diproses_kasi_pais'    => 'primary',
+        'diproses_tata_usaha'   => 'primary',
         'selesai'               => 'success',
     ];
     return isset($colors[$status]) ? $colors[$status] : 'secondary';
@@ -85,4 +85,54 @@ function getNextStatus($status) {
 function getStatusIndex($status) {
     $idx = array_search($status, array_keys(getStatusSteps()));
     return $idx === false ? -1 : $idx;
+}
+
+// Transisi status yang diizinkan per role per jenis entitas.
+// Admin hanya menangani finalisasi (selesai) sebagai pengarsipan.
+function getAllowedTransitions($role, $type) {
+    $map = [
+        'surat_masuk' => [
+            'tata_usaha' => [
+                'draft' => ['menunggu_verifikasi'],
+                'terverifikasi' => ['diproses_tata_usaha'],
+            ],
+            'pimpinan' => [
+                'menunggu_verifikasi' => ['terverifikasi'],
+            ],
+            'admin' => [
+                'diproses_tata_usaha' => ['selesai'],
+            ],
+        ],
+        'surat_keluar' => [
+            'tata_usaha' => [
+                'draft' => ['menunggu_verifikasi'],
+                'terverifikasi' => ['diproses_tata_usaha'],
+                'diproses_tata_usaha' => ['selesai'],
+            ],
+            'pimpinan' => [
+                'menunggu_verifikasi' => ['terverifikasi'],
+            ],
+            'admin' => [],
+        ],
+        'disposisi' => [
+            'tata_usaha' => [
+                'draft' => ['diproses_tata_usaha'],
+                'diproses_tata_usaha' => ['selesai'],
+            ],
+            'pimpinan' => [],
+            'admin' => [],
+        ],
+    ];
+    return isset($map[$type][$role]) ? $map[$type][$role] : [];
+}
+
+// Ambil daftar status tujuan yang boleh dipilih role dari status sekarang
+function getNextAllowedStatuses($role, $type, $current) {
+    $transitions = getAllowedTransitions($role, $type);
+    return isset($transitions[$current]) ? $transitions[$current] : [];
+}
+
+// Cek apakah sebuah transisi diizinkan
+function canTransition($role, $type, $current, $next) {
+    return in_array($next, getNextAllowedStatuses($role, $type, $current));
 }
