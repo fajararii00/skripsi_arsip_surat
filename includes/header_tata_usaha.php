@@ -23,6 +23,7 @@ $inisial   = strtoupper(substr(trim($nama_user), 0, 1));
   <title>Tata Usaha - Arsip Surat</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="<?= $base_url ?>/assets/css/style.css">
   <style>
     body { background-color: #f4f6fb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .navbar-custom {
