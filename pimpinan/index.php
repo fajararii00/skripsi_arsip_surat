@@ -57,7 +57,7 @@ $disposisi_aktif        = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*
   <!-- Daftar 5 Surat Masuk Menunggu Verifikasi -->
   <div class="card shadow-sm mb-4">
     <div class="card-header bg-primary text-white fw-semibold">
-      5 Surat Masuk Menunggu Verifikasi/Disposisi
+      Daftar teratas 5 Surat Masuk Menunggu Verifikasi/Disposisi
     </div>
     <div class="card-body">
       <table class="table table-bordered table-striped">
@@ -105,7 +105,7 @@ $disposisi_aktif        = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*
   <!-- Daftar 5 Disposisi Terbaru yang Diberikan -->
   <div class="card shadow-sm">
     <div class="card-header bg-primary text-white fw-semibold">
-      5 Disposisi Terbaru (Diberikan)
+      Daftar teratas 5 Disposisi Terbaru (Diberikan)
     </div>
     <div class="card-body">
       <table class="table table-bordered table-striped">
