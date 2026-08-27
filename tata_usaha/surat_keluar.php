@@ -8,21 +8,22 @@ if ($_SESSION['role'] != 'tata_usaha') {
     exit;
 }
 
-// Ambil kata kunci pencarian
+// Ambil kata kunci pencarian & filter status
 $q = isset($_GET['q']) ? mysqli_real_escape_string($conn, $_GET['q']) : "";
+$status = isset($_GET['status']) ? mysqli_real_escape_string($conn, $_GET['status']) : "";
 
+$where = "1=1";
 if ($q) {
-    $sql = "SELECT * FROM surat_keluar 
-            WHERE no_surat LIKE '%$q%' 
-               OR tujuan LIKE '%$q%' 
-               OR instansi LIKE '%$q%' 
-               OR kategori LIKE '%$q%' 
-               OR perihal LIKE '%$q%'
-            ORDER BY tgl_surat DESC";
-} else {
-    $sql = "SELECT * FROM surat_keluar ORDER BY tgl_surat DESC";
+    $where .= " AND (no_surat LIKE '%$q%'
+                 OR tujuan LIKE '%$q%'
+                 OR instansi LIKE '%$q%'
+                 OR kategori LIKE '%$q%'
+                 OR perihal LIKE '%$q%')";
 }
-$surat = mysqli_query($conn, $sql);
+if ($status) {
+    $where .= " AND status='$status'";
+}
+$surat = mysqli_query($conn, "SELECT * FROM surat_keluar WHERE $where ORDER BY tgl_surat DESC");
 ?>
 
 <?php include "../includes/header_tata_usaha.php"; ?>
@@ -36,7 +37,13 @@ $surat = mysqli_query($conn, $sql);
       <i class="fa fa-plus"></i> Tambah Surat Keluar
     </a>
 
-    <form class="d-flex mb-3" method="get" action="">
+    <form class="d-flex mb-3 align-items-center" method="get" action="">
+      <select name="status" class="form-select form-select-sm me-2" style="max-width: 210px;" onchange="this.form.submit()">
+        <option value="">Semua Status</option>
+        <?php foreach (getStatusSteps() as $key => $label): ?>
+          <option value="<?= $key; ?>" <?= $status == $key ? 'selected' : ''; ?>><?= $label; ?></option>
+        <?php endforeach; ?>
+      </select>
       <div class="input-group" style="max-width: 400px;">
         <input type="text" name="q" value="<?= htmlspecialchars($q); ?>"
               class="form-control form-control-sm"
@@ -47,6 +54,15 @@ $surat = mysqli_query($conn, $sql);
       </div>
     </form>
   </div>
+
+  <?php if ($status): ?>
+    <div class="mb-2">
+      <span class="badge bg-info">
+        Filter: <?= htmlspecialchars(getStatusLabel($status)); ?>
+        <a href="surat_keluar.php" class="text-white text-decoration-none ms-1"><i class="fa fa-xmark"></i></a>
+      </span>
+    </div>
+  <?php endif; ?>
 
   <div class="card shadow-sm">
     <div class="card-body">

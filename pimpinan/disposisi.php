@@ -13,51 +13,50 @@ include "../includes/header_pimpinan.php";
 
 $user_id = $_SESSION['user_id'];
 
-// Ambil kata kunci pencarian
+// Ambil kata kunci pencarian & filter status
 $q = isset($_GET['q']) ? mysqli_real_escape_string($conn, $_GET['q']) : "";
+$status = isset($_GET['status']) ? mysqli_real_escape_string($conn, $_GET['status']) : "";
 
 // Query disposisi yang dibuat oleh pimpinan (pengirim)
+$where = "d.pengirim_id = '$user_id'";
 if ($q) {
-    $query = "
-      SELECT d.*, sm.no_surat, sm.perihal, sm.pengirim AS pengirim_surat,
-             u2.nama AS penerima
-      FROM disposisi d
-      JOIN surat_masuk sm ON d.surat_masuk_id = sm.id
-      LEFT JOIN users u2 ON d.penerima_id = u2.id
-      WHERE d.pengirim_id = '$user_id'
-        AND (
-            sm.no_surat LIKE '%$q%'
-            OR sm.perihal LIKE '%$q%'
-            OR u2.nama LIKE '%$q%'
-            OR d.instruksi LIKE '%$q%'
-            OR d.status LIKE '%$q%'
-        )
-      ORDER BY d.created_at DESC
-    ";
-} else {
-    $query = "
-      SELECT d.*, sm.no_surat, sm.perihal, sm.pengirim AS pengirim_surat,
-             u2.nama AS penerima
-      FROM disposisi d
-      JOIN surat_masuk sm ON d.surat_masuk_id = sm.id
-      LEFT JOIN users u2 ON d.penerima_id = u2.id
-      WHERE d.pengirim_id = '$user_id'
-      ORDER BY d.created_at DESC
-    ";
+    $where .= " AND (sm.no_surat LIKE '%$q%'
+                 OR sm.perihal LIKE '%$q%'
+                 OR u2.nama LIKE '%$q%'
+                 OR d.instruksi LIKE '%$q%'
+                 OR d.status LIKE '%$q%')";
 }
+if ($status) {
+    $where .= " AND d.status='$status'";
+}
+$query = "
+  SELECT d.*, sm.no_surat, sm.perihal, sm.pengirim AS pengirim_surat,
+         u2.nama AS penerima
+  FROM disposisi d
+  JOIN surat_masuk sm ON d.surat_masuk_id = sm.id
+  LEFT JOIN users u2 ON d.penerima_id = u2.id
+  WHERE $where
+  ORDER BY d.created_at DESC
+";
 $disposisi = mysqli_query($conn, $query);
 ?>
 
 <div class="container mt-4">
   <h3 class="fw-bold mb-3">Disposisi Saya</h3>
 
-  <!-- Tombol Tambah & Pencarian -->
-  <div class="d-flex justify-content-between mb-3">
+  <!-- Tombol Tambah, Filter & Pencarian -->
+  <div class="d-flex justify-content-between flex-wrap gap-2 mb-3">
     <a href="disposisi_tambah.php" class="btn btn-success btn-sm mb-3">
       <i class="fa fa-plus"></i> Tambah Disposisi
     </a>
 
     <form class="d-flex align-items-center" method="get" action="">
+      <select name="status" class="form-select form-select-sm me-2" style="max-width: 200px;" onchange="this.form.submit()">
+        <option value="">Semua Status</option>
+        <?php foreach (getStatusSteps() as $key => $label): ?>
+          <option value="<?= $key; ?>" <?= $status == $key ? 'selected' : ''; ?>><?= $label; ?></option>
+        <?php endforeach; ?>
+      </select>
       <input type="text" name="q" value="<?= htmlspecialchars($q); ?>"
              class="form-control form-control-sm me-2"
              placeholder="Cari disposisi..." style="max-width:220px;">
@@ -69,6 +68,15 @@ $disposisi = mysqli_query($conn, $query);
       </a>
     </form>
   </div>
+
+  <?php if ($status): ?>
+    <div class="mb-2">
+      <span class="badge bg-info">
+        Filter: <?= htmlspecialchars(getStatusLabel($status)); ?>
+        <a href="disposisi.php" class="text-white text-decoration-none ms-1"><i class="fa fa-xmark"></i></a>
+      </span>
+    </div>
+  <?php endif; ?>
 
   <div class="card shadow-sm">
     <div class="card-body">

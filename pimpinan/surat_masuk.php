@@ -11,30 +11,36 @@ if ($_SESSION['role'] != 'pimpinan') {
 
 include "../includes/header_pimpinan.php"; // navbar pimpinan
 
-// Ambil kata kunci pencarian
+// Ambil kata kunci pencarian & filter status
 $q = isset($_GET['q']) ? mysqli_real_escape_string($conn, $_GET['q']) : "";
+$status = isset($_GET['status']) ? mysqli_real_escape_string($conn, $_GET['status']) : "";
 
-// Query data surat masuk
+$where = "1=1";
 if ($q) {
-    $sql = "SELECT * FROM surat_masuk 
-            WHERE no_surat LIKE '%$q%' 
-               OR pengirim LIKE '%$q%' 
-               OR perihal LIKE '%$q%' 
-               OR instansi LIKE '%$q%' 
-               OR kategori LIKE '%$q%'
-            ORDER BY tgl_surat DESC";
-} else {
-    $sql = "SELECT * FROM surat_masuk ORDER BY tgl_surat DESC";
+    $where .= " AND (no_surat LIKE '%$q%'
+                 OR pengirim LIKE '%$q%'
+                 OR perihal LIKE '%$q%'
+                 OR instansi LIKE '%$q%'
+                 OR kategori LIKE '%$q%')";
 }
-$surat = mysqli_query($conn, $sql);
+if ($status) {
+    $where .= " AND status='$status'";
+}
+$surat = mysqli_query($conn, "SELECT * FROM surat_masuk WHERE $where ORDER BY tgl_surat DESC");
 ?>
 
 <div class="container mt-4">
   <h3 class="fw-bold mb-3">Daftar Surat Masuk</h3>
 
-  <!-- Form Pencarian & Unduh -->
-  <div class="d-flex justify-content-end mb-3">
+  <!-- Form Pencarian, Filter & Unduh -->
+  <div class="d-flex justify-content-end flex-wrap gap-2 mb-3">
     <form class="d-flex align-items-center" method="get" action="">
+      <select name="status" class="form-select form-select-sm me-2" style="max-width: 200px;" onchange="this.form.submit()">
+        <option value="">Semua Status</option>
+        <?php foreach (getStatusSteps() as $key => $label): ?>
+          <option value="<?= $key; ?>" <?= $status == $key ? 'selected' : ''; ?>><?= $label; ?></option>
+        <?php endforeach; ?>
+      </select>
       <input type="text" name="q" value="<?= htmlspecialchars($q); ?>" 
              class="form-control form-control-sm me-2" 
              placeholder="Cari surat masuk..." style="max-width:220px;">
@@ -48,6 +54,15 @@ $surat = mysqli_query($conn, $sql);
           </a>
     </form>
   </div>
+
+  <?php if ($status): ?>
+    <div class="mb-2">
+      <span class="badge bg-info">
+        Filter: <?= htmlspecialchars(getStatusLabel($status)); ?>
+        <a href="surat_masuk.php" class="text-white text-decoration-none ms-1"><i class="fa fa-xmark"></i></a>
+      </span>
+    </div>
+  <?php endif; ?>
 
   <div class="card shadow-sm">
     <div class="card-body">
