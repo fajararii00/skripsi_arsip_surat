@@ -26,9 +26,15 @@ if (!$surat) {
 }
 
 if (canTransition('tata_usaha', $type, $surat['status'], $next)) {
-    mysqli_query($conn, "UPDATE $type SET status='$next' WHERE id=$id");
-    logStatus($conn, $type, $id, $next, 'Diperbarui dari dashboard');
+    if (mysqli_query($conn, "UPDATE $type SET status='$next' WHERE id=$id")) {
+        logStatus($conn, $type, $id, $next, 'Diperbarui dari dashboard');
+        $_SESSION['toast_success'] = "Status surat berhasil diperbarui!";
+    } else {
+        $_SESSION['toast_error'] = "Gagal memperbarui status!";
+    }
+} else {
+    $_SESSION['toast_error'] = "Aksi perubahan status tidak diperbolehkan!";
 }
 
 header("Location: index.php");
-exit;
+exit;

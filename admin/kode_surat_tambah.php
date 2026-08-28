@@ -20,10 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $query = "INSERT INTO kode_surat (kode, nama) VALUES ('$kode', '$nama')";
             if (mysqli_query($conn, $query)) {
+                $_SESSION['toast_success'] = "Kode surat berhasil ditambahkan!";
                 header("Location: kode_surat.php");
                 exit;
             } else {
                 $msg = "Gagal menambahkan kode surat: " . mysqli_error($conn);
+                $_SESSION['toast_error'] = $msg;
             }
         }
     }

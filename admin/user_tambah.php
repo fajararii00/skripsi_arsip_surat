@@ -14,10 +14,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $query = "INSERT INTO users (nama, email, password, role) 
               VALUES ('$nama', '$email', '$password', '$role')";
     if (mysqli_query($conn, $query)) {
+        $_SESSION['toast_success'] = "User berhasil ditambahkan!";
         header("Location: users.php");
         exit;
     } else {
         $msg = "Gagal menambah user: " . mysqli_error($conn);
+        $_SESSION['toast_error'] = $msg;
     }
 }
 ?>

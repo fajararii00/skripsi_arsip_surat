@@ -22,10 +22,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (mysqli_query($conn, $query)) {
+        $_SESSION['toast_success'] = "Data user berhasil diperbarui!";
         header("Location: users.php");
         exit;
     } else {
         $msg = "Gagal mengupdate user: " . mysqli_error($conn);
+        $_SESSION['toast_error'] = $msg;
     }
 }
 ?>

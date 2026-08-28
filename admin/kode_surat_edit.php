@@ -32,10 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $query = "UPDATE kode_surat SET kode='$kode_val', nama='$nama' WHERE id=$id";
             if (mysqli_query($conn, $query)) {
+                $_SESSION['toast_success'] = "Kode surat berhasil diperbarui!";
                 header("Location: kode_surat.php");
                 exit;
             } else {
                 $msg = "Gagal update: " . mysqli_error($conn);
+                $_SESSION['toast_error'] = $msg;
             }
         }
     }

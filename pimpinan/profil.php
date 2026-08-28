@@ -25,8 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (mysqli_query($conn, $query)) {
         $_SESSION['nama'] = $nama; // update session supaya nama baru langsung muncul di navbar
         $msg = "✅ Profil berhasil diperbarui!";
+        $_SESSION['toast_success'] = "Profil berhasil diperbarui!";
     } else {
         $msg = "❌ Gagal update profil: " . mysqli_error($conn);
+        $_SESSION['toast_error'] = "Gagal memperbarui profil!";
     }
 }
 ?>

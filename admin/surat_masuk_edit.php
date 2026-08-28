@@ -53,10 +53,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($status != $surat['status']) {
                 logStatus($conn, 'surat_masuk', $id, $status);
             }
+            $_SESSION['toast_success'] = "Surat masuk berhasil diperbarui!";
             header("Location: surat_masuk.php");
             exit;
         } else {
             $msg = "Gagal update: " . mysqli_error($conn);
+            $_SESSION['toast_error'] = $msg;
         }
     }
 }

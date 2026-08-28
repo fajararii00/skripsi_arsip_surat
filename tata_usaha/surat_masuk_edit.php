@@ -58,10 +58,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $update_file
                   WHERE id=$id";
         if (mysqli_query($conn, $query)) {
+            $_SESSION['toast_success'] = "Surat masuk berhasil diperbarui!";
             header("Location: surat_masuk.php");
             exit;
         } else {
             $msg = "Gagal update: " . mysqli_error($conn);
+            $_SESSION['toast_error'] = $msg;
         }
     }
 }

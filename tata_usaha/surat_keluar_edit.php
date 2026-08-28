@@ -104,10 +104,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // QR gagal generate, tidak block proses utama
                 }
 
+                $_SESSION['toast_success'] = "Surat keluar berhasil diperbarui!";
                 header("Location: surat_keluar.php");
                 exit;
             } else {
                 $msg = "Gagal update: " . mysqli_error($conn);
+                $_SESSION['toast_error'] = $msg;
             }
         }
     }

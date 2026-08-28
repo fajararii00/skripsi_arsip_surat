@@ -22,10 +22,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // cek password (gunakan password_hash di register)
         if (password_verify($password, $user['password'])) {
             // simpan ke session
-           // simpan ke session
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['nama']    = $user['nama'];
             $_SESSION['role']    = $user['role'];
+            $_SESSION['toast_success'] = "Berhasil login! Selamat datang, " . $user['nama'];
 
             // redirect sesuai role
             if ($user['role'] == 'admin') {
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } elseif ($user['role'] == 'pimpinan') {
                 header("Location: pimpinan/index.php");
                 exit;
-            }elseif ($user['role'] == 'tata_usaha') {
+            } elseif ($user['role'] == 'tata_usaha') {
                 header("Location: tata_usaha/index.php");
                 exit;
             } else {
@@ -43,10 +43,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
         } else {
-            $error = "Password salah!";
+            $error = "Email atau password salah!";
+            $_SESSION['toast_error'] = $error;
         }
     } else {
-        $error = "Email tidak ditemukan!";
+        $error = "Email atau password salah!";
+        $_SESSION['toast_error'] = $error;
     }
 }
 ?>
@@ -57,6 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Login - Arsip Surat</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/images/logo-disdikbud.png">
     <style>
@@ -87,9 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <h4 class="text-center mb-4">Login Arsip Surat</h4>
 
-        <?php if (!empty($error)): ?>
-            <div class="alert alert-danger"><?= $error ?></div>
-        <?php endif; ?>
+
 
         <form method="POST" action="">
             <div class="mb-3 text-start">
@@ -98,7 +100,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="mb-3 text-start">
                 <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required>
+                <div class="input-group">
+                    <input type="password" name="password" id="passwordInput" class="form-control" required>
+                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                        <i class="fa fa-eye" id="toggleIcon"></i>
+                    </button>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
@@ -107,7 +114,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('passwordInput');
+    const toggleIcon = document.getElementById('toggleIcon');
+
+    if (togglePassword && passwordInput && toggleIcon) {
+        togglePassword.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        });
+    }
+});
+</script>
+<?php include "includes/toast.php"; ?>
 </body>
 </html>
+
+
 
 

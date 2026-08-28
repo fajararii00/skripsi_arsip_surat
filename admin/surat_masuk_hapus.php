@@ -15,6 +15,11 @@ if ($data && $data['file_surat']) {
 }
 
 // Hapus data di DB
-mysqli_query($conn, "DELETE FROM surat_masuk WHERE id=$id");
+if (mysqli_query($conn, "DELETE FROM surat_masuk WHERE id=$id")) {
+    $_SESSION['toast_success'] = "Surat masuk berhasil dihapus!";
+} else {
+    $_SESSION['toast_error'] = "Gagal menghapus surat masuk: " . mysqli_error($conn);
+}
 header("Location: surat_masuk.php");
 exit;
+

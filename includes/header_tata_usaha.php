@@ -9,9 +9,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'tata_usaha') {
     exit;
 }
 
-// Basis URL aplikasi (agar link navbar benar dari halaman di folder maupun di root)
-$app_root = str_replace('\\', '/', dirname(dirname(__FILE__)));
-$base_url = rtrim(str_replace($_SERVER['DOCUMENT_ROOT'], '', $app_root), '/');
+// Basis URL aplikasi (secara dinamis menyesuaikan struktur folder & web server)
+$script_dir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+if (preg_match('#/(admin|pimpinan|tata_usaha)$#i', $script_dir)) {
+    $base_url = dirname($script_dir);
+} else {
+    $base_url = $script_dir;
+}
+$base_url = rtrim(str_replace('\\', '/', $base_url), '/');
+
 
 $nama_user = $_SESSION['nama'];
 $inisial   = strtoupper(substr(trim($nama_user), 0, 1));

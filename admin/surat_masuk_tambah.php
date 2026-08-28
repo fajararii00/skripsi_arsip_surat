@@ -38,10 +38,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (mysqli_query($conn, $query)) {
             $new_id = mysqli_insert_id($conn);
             logStatus($conn, 'surat_masuk', $new_id, $status, 'Surat diterima');
+            $_SESSION['toast_success'] = "Surat masuk berhasil ditambahkan!";
             header("Location: surat_masuk.php");
             exit;
         } else {
             $msg = "Gagal menambahkan surat: " . mysqli_error($conn);
+            $_SESSION['toast_error'] = $msg;
         }
     }
 }

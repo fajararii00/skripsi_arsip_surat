@@ -26,9 +26,15 @@ if (!$surat) {
 }
 
 if (canTransition('pimpinan', $type, $surat['status'], $next)) {
-    mysqli_query($conn, "UPDATE $type SET status='$next' WHERE id=$id");
-    logStatus($conn, $type, $id, $next, 'Diverifikasi oleh pimpinan');
+    if (mysqli_query($conn, "UPDATE $type SET status='$next' WHERE id=$id")) {
+        logStatus($conn, $type, $id, $next, 'Diverifikasi oleh pimpinan');
+        $_SESSION['toast_success'] = "Status verifikasi berhasil diperbarui!";
+    } else {
+        $_SESSION['toast_error'] = "Gagal memperbarui verifikasi!";
+    }
+} else {
+    $_SESSION['toast_error'] = "Aksi verifikasi tidak diperbolehkan!";
 }
 
 header("Location: index.php");
-exit;
+exit;

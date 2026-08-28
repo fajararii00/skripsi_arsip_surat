@@ -113,10 +113,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $upd = "UPDATE `$table` SET status='$new_status' WHERE id=$id";
         if (mysqli_query($conn, $upd)) {
             logStatus($conn, $type, $id, $new_status, $keterangan ?: null);
+            $_SESSION['toast_success'] = "Status tracking berhasil diperbarui!";
             header("Location: tracking.php?type=$type&id=$id&saved=1");
             exit;
         } else {
             $msg = "Gagal mengubah status: " . mysqli_error($conn);
+            $_SESSION['toast_error'] = $msg;
         }
     }
 }

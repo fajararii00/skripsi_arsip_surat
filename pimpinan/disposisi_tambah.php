@@ -46,10 +46,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 logStatus($conn, 'surat_masuk', $surat_masuk_id, 'terverifikasi', 'Diverifikasi melalui disposisi');
             }
 
+            $_SESSION['toast_success'] = "Disposisi berhasil dibuat!";
             header("Location: disposisi.php");
             exit;
         } else {
             $msg = "Gagal menambah disposisi: " . mysqli_error($conn);
+            $_SESSION['toast_error'] = $msg;
         }
     }
 }

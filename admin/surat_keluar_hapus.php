@@ -20,7 +20,12 @@ if ($row && $row['file_surat']) {
 }
 
 // hapus dari database
-mysqli_query($conn, "DELETE FROM surat_keluar WHERE id=$id");
+if (mysqli_query($conn, "DELETE FROM surat_keluar WHERE id=$id")) {
+    $_SESSION['toast_success'] = "Surat keluar berhasil dihapus!";
+} else {
+    $_SESSION['toast_error'] = "Gagal menghapus surat keluar: " . mysqli_error($conn);
+}
 
 header("Location: surat_keluar.php");
 exit;
+

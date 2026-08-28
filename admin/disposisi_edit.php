@@ -37,10 +37,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($status != $disposisi['status']) {
             logStatus($conn, 'disposisi', $id, $status);
         }
+        $_SESSION['toast_success'] = "Disposisi berhasil diperbarui!";
         header("Location: disposisi.php");
         exit;
     } else {
         $msg = "Gagal mengupdate disposisi: " . mysqli_error($conn);
+        $_SESSION['toast_error'] = $msg;
     }
 }
 ?>
