@@ -92,6 +92,29 @@ INSERT INTO `disposisi` (`id`, `surat_masuk_id`, `pengirim_id`, `penerima_id`, `
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `kode_surat`
+--
+
+CREATE TABLE `kode_surat` (
+  `id` int(11) NOT NULL,
+  `kode` varchar(10) NOT NULL,
+  `nama` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `kode_surat`
+--
+
+INSERT INTO `kode_surat` (`id`, `kode`, `nama`) VALUES
+(1, '001', 'Surat Undangan'),
+(2, '002', 'Surat Edaran'),
+(3, '003', 'Surat Tugas'),
+(4, '004', 'Surat Keterangan'),
+(5, '005', 'Surat Pernyataan');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `surat_keluar`
 --
 
@@ -99,6 +122,7 @@ CREATE TABLE `surat_keluar` (
   `id` int(11) NOT NULL,
   `no_agenda` varchar(50) DEFAULT NULL,
   `no_surat` varchar(100) DEFAULT NULL,
+  `kode_surat_id` int(11) DEFAULT NULL,
   `tgl_surat` date DEFAULT NULL,
   `tujuan` varchar(150) DEFAULT NULL,
   `instansi` varchar(150) DEFAULT NULL,
@@ -106,6 +130,7 @@ CREATE TABLE `surat_keluar` (
   `perihal` varchar(255) DEFAULT NULL,
   `isi_surat` text DEFAULT NULL,
   `file_surat` varchar(255) DEFAULT NULL,
+  `qr_code` varchar(255) DEFAULT NULL,
   `pembuat_id` int(11) DEFAULT NULL,
   `penyetuju_id` int(11) DEFAULT NULL,
   `status` enum('draft','menunggu_verifikasi','terverifikasi','diproses_tata_usaha','selesai') DEFAULT 'draft',
@@ -116,12 +141,12 @@ CREATE TABLE `surat_keluar` (
 -- Dumping data for table `surat_keluar`
 --
 
-INSERT INTO `surat_keluar` (`id`, `no_agenda`, `no_surat`, `tgl_surat`, `tujuan`, `instansi`, `kategori`, `perihal`, `isi_surat`, `file_surat`, `pembuat_id`, `penyetuju_id`, `status`, `created_at`) VALUES
-(4, '01', '01', '2026-03-02', 'Kantor PUPR', 'Dinas Pendidikan dan Kebudayaan', 'Penting', 'Bom Nuklir', 'Terjaga', '', 1, NULL, 'draft', '2026-03-07 12:35:51'),
-(6, '02', '002', '2026-03-12', 'Kantor PUPR', 'Dinas Pendidikan dan Kebudayaan', 'Penting', 'Privat', 'Rahasia', '', 1, NULL, 'draft', '2026-04-23 05:10:05'),
-(7, '03', '003', '2026-03-17', 'BADAN KEPEGAWAIAN DAERAH (BKD)', 'Dinas Pendidikan dan Kebudayaan Muaro Jambi', 'Privat', '.', 'Kepada yang terhormat kepala dinas ', '', 1, NULL, 'draft', '2026-04-23 06:18:19'),
-(8, '04', '004', '2026-03-24', 'Kantor Kehutanan dan Pertanian muaro Jambi', 'Dinas Pendidikan dan Kebudayaan Muaro Jambi', 'Privat', 'Penting', 'Rahasia', '', 1, NULL, 'draft', '2026-04-23 06:25:34'),
-(9, '05', '005', '2026-04-07', 'Dinas Perikanan', 'Dinas Pendidikan dan Kebudayaan Muaro Jambi', 'Privat', 'Masalah Ikan di Batanghari', 'Diharapkan Bisa Hadir', '', 1, NULL, 'draft', '2026-04-23 06:28:05');
+INSERT INTO `surat_keluar` (`id`, `no_agenda`, `no_surat`, `kode_surat_id`, `tgl_surat`, `tujuan`, `instansi`, `kategori`, `perihal`, `isi_surat`, `file_surat`, `qr_code`, `pembuat_id`, `penyetuju_id`, `status`, `created_at`) VALUES
+(4, '01', '01', 1, '2026-03-02', 'Kantor PUPR', 'Dinas Pendidikan dan Kebudayaan', 'Penting', 'Bom Nuklir', 'Terjaga', '', NULL, 1, NULL, 'draft', '2026-03-07 12:35:51'),
+(6, '02', '002', 1, '2026-03-12', 'Kantor PUPR', 'Dinas Pendidikan dan Kebudayaan', 'Penting', 'Privat', 'Rahasia', '', NULL, 1, NULL, 'draft', '2026-04-23 05:10:05'),
+(7, '03', '003', 1, '2026-03-17', 'BADAN KEPEGAWAIAN DAERAH (BKD)', 'Dinas Pendidikan dan Kebudayaan Muaro Jambi', 'Privat', '.', 'Kepada yang terhormat kepala dinas ', '', NULL, 1, NULL, 'draft', '2026-04-23 06:18:19'),
+(8, '04', '004', 1, '2026-03-24', 'Kantor Kehutanan dan Pertanian muaro Jambi', 'Dinas Pendidikan dan Kebudayaan Muaro Jambi', 'Privat', 'Penting', 'Rahasia', '', NULL, 1, NULL, 'draft', '2026-04-23 06:25:34'),
+(9, '05', '005', 2, '2026-04-07', 'Dinas Perikanan', 'Dinas Pendidikan dan Kebudayaan Muaro Jambi', 'Privat', 'Masalah Ikan di Batanghari', 'Diharapkan Bisa Hadir', '', NULL, 1, NULL, 'draft', '2026-04-23 06:28:05');
 
 -- --------------------------------------------------------
 
@@ -202,11 +227,18 @@ ALTER TABLE `disposisi`
   ADD KEY `penerima_id` (`penerima_id`);
 
 --
+-- Indexes for table `kode_surat`
+--
+ALTER TABLE `kode_surat`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `kode` (`kode`);
+
+--
 -- Indexes for table `surat_keluar`
 --
 ALTER TABLE `surat_keluar`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `no_surat` (`no_surat`),
+  ADD KEY `kode_surat_id` (`kode_surat_id`),
   ADD KEY `pembuat_id` (`pembuat_id`),
   ADD KEY `penyetuju_id` (`penyetuju_id`);
 
@@ -238,6 +270,12 @@ ALTER TABLE `status_history`
 --
 ALTER TABLE `disposisi`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `kode_surat`
+--
+ALTER TABLE `kode_surat`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `surat_keluar`
@@ -280,7 +318,8 @@ ALTER TABLE `disposisi`
 --
 ALTER TABLE `surat_keluar`
   ADD CONSTRAINT `surat_keluar_ibfk_1` FOREIGN KEY (`pembuat_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `surat_keluar_ibfk_2` FOREIGN KEY (`penyetuju_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `surat_keluar_ibfk_2` FOREIGN KEY (`penyetuju_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `surat_keluar_ibfk_3` FOREIGN KEY (`kode_surat_id`) REFERENCES `kode_surat` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -39,6 +39,10 @@ if ($type == 'surat_keluar') {
         if ($row['file_surat']) {
             $file_url = "assets/uploads/surat_keluar/" . $row['file_surat'];
         }
+        $qr_code_url = '';
+        if ($row['qr_code']) {
+            $qr_code_url = "assets/uploads/qr_codes/" . $row['qr_code'];
+        }
         $qr = mysqli_query($conn, "SELECT nama FROM users WHERE id='" . intval($row['pembuat_id']) . "'");
         $pr = mysqli_fetch_assoc($qr);
         $pembuat_nama = $pr['nama'] ?? '-';
@@ -184,6 +188,15 @@ if ($_SESSION['role'] == 'pimpinan') {
             <a href="<?= htmlspecialchars($file_url); ?>" target="_blank" class="btn btn-info btn-sm text-white">
               <i class="fa fa-eye"></i> Lihat File
             </a>
+          </div>
+        <?php endif; ?>
+        <?php if ($qr_code_url): ?>
+          <div class="col-md-12 mb-2">
+            <strong>QR Code Legalitas:</strong><br>
+            <a href="<?= htmlspecialchars($qr_code_url); ?>" target="_blank">
+              <img src="<?= htmlspecialchars($qr_code_url); ?>" alt="QR Code" width="100" height="100" style="border-radius:8px; border:2px solid #e9ecef;">
+            </a>
+            <small class="text-muted d-block mt-1">Klik untuk melihat QR code ukuran penuh</small>
           </div>
         <?php endif; ?>
       </div>

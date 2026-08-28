@@ -3,13 +3,13 @@ include "../includes/auth.php";
 include "../includes/db.php";
 include "../includes/tracking.php";
 
-// pastikan hanya staf yang bisa akses
+// pastikan hanya pimpinan yang bisa akses
 if ($_SESSION['role'] != 'pimpinan') {
     header("Location: ../login.php");
     exit;
 }
 
-include "../includes/header_pimpinan.php"; // navbar pimpinan
+include "../includes/header_pimpinan.php";
 
 // Ambil kata kunci pencarian & filter status
 $q = isset($_GET['q']) ? mysqli_real_escape_string($conn, $_GET['q']) : "";
@@ -17,16 +17,22 @@ $status = isset($_GET['status']) ? mysqli_real_escape_string($conn, $_GET['statu
 
 $where = "1=1";
 if ($q) {
-    $where .= " AND (no_surat LIKE '%$q%'
-                 OR tujuan LIKE '%$q%'
-                 OR instansi LIKE '%$q%'
-                 OR kategori LIKE '%$q%'
-                 OR perihal LIKE '%$q%')";
+    $where .= " AND (sk.no_surat LIKE '%$q%'
+                 OR sk.tujuan LIKE '%$q%'
+                 OR sk.instansi LIKE '%$q%'
+                 OR sk.kategori LIKE '%$q%'
+                 OR sk.perihal LIKE '%$q%')";
 }
 if ($status) {
-    $where .= " AND status='$status'";
+    $where .= " AND sk.status='$status'";
 }
-$surat = mysqli_query($conn, "SELECT * FROM surat_keluar WHERE $where ORDER BY tgl_surat DESC");
+$surat = mysqli_query($conn, "
+    SELECT sk.*, ks.kode AS kode_surat_kode, ks.nama AS jenis_surat
+    FROM surat_keluar sk
+    LEFT JOIN kode_surat ks ON sk.kode_surat_id = ks.id
+    WHERE $where
+    ORDER BY sk.tgl_surat DESC
+");
 ?>
 
 <div class="container mt-4">
@@ -41,19 +47,17 @@ $surat = mysqli_query($conn, "SELECT * FROM surat_keluar WHERE $where ORDER BY t
           <option value="<?= $key; ?>" <?= $status == $key ? 'selected' : ''; ?>><?= $label; ?></option>
         <?php endforeach; ?>
       </select>
-      <input type="text" name="q" value="<?= htmlspecialchars($q); ?>" 
-             class="form-control form-control-sm me-2" 
+      <input type="text" name="q" value="<?= htmlspecialchars($q); ?>"
+             class="form-control form-control-sm me-2"
              placeholder="Cari surat keluar..." style="max-width:220px;">
 
-      <!-- Tombol Cari -->
       <button class="btn btn-sm btn-primary me-2" type="submit" title="Cari">
         <i class="fa fa-search"></i>
       </button>
 
-      <!-- Tombol Unduh CSV -->
       <a href="pimpinan_export.php?type=surat_keluar" class="btn btn-sm btn-success">
-            <i class="fa fa-download"></i>
-          </a>
+        <i class="fa fa-download"></i>
+      </a>
     </form>
   </div>
 
@@ -73,13 +77,13 @@ $surat = mysqli_query($conn, "SELECT * FROM surat_keluar WHERE $where ORDER BY t
           <tr>
             <th>No</th>
             <th>No Surat</th>
+            <th>Kode Surat</th>
             <th>Tanggal Surat</th>
             <th>Tujuan</th>
             <th>Instansi</th>
-            <th>Kategori</th>
             <th>Perihal</th>
             <th>Status</th>
-            <th>File</th>
+            <th>QR</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -89,18 +93,27 @@ $surat = mysqli_query($conn, "SELECT * FROM surat_keluar WHERE $where ORDER BY t
             <tr>
               <td><?= $no++; ?></td>
               <td><?= htmlspecialchars($row['no_surat']); ?></td>
+              <td>
+                <?php if($row['kode_surat_kode']): ?>
+                  <span class="badge bg-info"><?= htmlspecialchars($row['kode_surat_kode']); ?></span>
+                <?php else: ?>
+                  <span class="text-muted">-</span>
+                <?php endif; ?>
+              </td>
               <td><?= htmlspecialchars($row['tgl_surat']); ?></td>
               <td><?= htmlspecialchars($row['tujuan']); ?></td>
               <td><?= htmlspecialchars($row['instansi']); ?></td>
-              <td><?= htmlspecialchars($row['kategori']); ?></td>
               <td><?= htmlspecialchars($row['perihal']); ?></td>
               <td><?= statusBadge($row['status']); ?></td>
-              <td>
-                <?php if($row['file_surat']): ?>
-                  <a href="../assets/uploads/surat_keluar/<?= htmlspecialchars($row['file_surat']); ?>" 
-                     class="btn btn-info btn-sm" target="_blank">Lihat</a>
+              <td class="text-center">
+                <?php if($row['qr_code']): ?>
+                  <a href="../assets/uploads/qr_codes/<?= htmlspecialchars($row['qr_code']); ?>" target="_blank" title="Lihat QR Code">
+                    <img src="../assets/uploads/qr_codes/<?= htmlspecialchars($row['qr_code']); ?>" alt="QR" width="40" height="40" style="border-radius:4px;">
+                  </a>
                 <?php else: ?>
-                  <span class="text-muted">-</span>
+                  <button class="btn btn-sm btn-outline-primary generate-qr" data-id="<?= $row['id']; ?>" title="Generate QR Code">
+                    <i class="fa fa-qrcode"></i>
+                  </button>
                 <?php endif; ?>
               </td>
               <td>
@@ -125,5 +138,32 @@ $surat = mysqli_query($conn, "SELECT * FROM surat_keluar WHERE $where ORDER BY t
     </div>
   </div>
 </div>
+
+<script>
+document.querySelectorAll('.generate-qr').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var id = this.getAttribute('data-id');
+        var btnEl = this;
+        btnEl.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+        btnEl.disabled = true;
+
+        fetch('../generate_qr.php?id=' + id)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    var td = btnEl.parentElement;
+                    td.innerHTML = '<a href="../assets/uploads/qr_codes/' + data.qr + '" target="_blank" title="Lihat QR Code"><img src="../assets/uploads/qr_codes/' + data.qr + '" alt="QR" width="40" height="40" style="border-radius:4px;"></a>';
+                } else {
+                    btnEl.innerHTML = '<i class="fa fa-qrcode"></i> Gagal';
+                    btnEl.disabled = false;
+                }
+            })
+            .catch(function() {
+                btnEl.innerHTML = '<i class="fa fa-qrcode"></i> Error';
+                btnEl.disabled = false;
+            });
+    });
+});
+</script>
 
 <?php include "../includes/footer.php"; ?>

@@ -89,6 +89,9 @@ $label     = getRoleLabel($_SESSION['role']);
           <a class="nav-link <?= basename($_SERVER['PHP_SELF'])=='laporan.php'?'active':'' ?>" href="<?= $base_url ?>/admin/laporan.php"><i class="fa fa-chart-pie"></i>Laporan</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link <?= basename($_SERVER['PHP_SELF'])=='kode_surat.php'?'active':'' ?>" href="<?= $base_url ?>/admin/kode_surat.php"><i class="fa fa-tags"></i>Kode Surat</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link <?= basename($_SERVER['PHP_SELF'])=='users.php'?'active':'' ?>" href="<?= $base_url ?>/admin/users.php"><i class="fa fa-users"></i>Manajemen User</a>
         </li>
       </ul>

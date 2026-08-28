@@ -8,16 +8,21 @@ $q = isset($_GET['q']) ? mysqli_real_escape_string($conn, $_GET['q']) : "";
 
 // Query surat keluar
 if ($q) {
-    $sql = "SELECT * FROM surat_keluar 
-            WHERE no_agenda LIKE '%$q%' 
-               OR no_surat LIKE '%$q%' 
-               OR tujuan LIKE '%$q%' 
-               OR instansi LIKE '%$q%' 
-               OR kategori LIKE '%$q%' 
-               OR perihal LIKE '%$q%'
-            ORDER BY created_at DESC";
+    $sql = "SELECT sk.*, ks.kode AS kode_surat_kode, ks.nama AS jenis_surat
+            FROM surat_keluar sk
+            LEFT JOIN kode_surat ks ON sk.kode_surat_id = ks.id
+            WHERE sk.no_agenda LIKE '%$q%'
+               OR sk.no_surat LIKE '%$q%'
+               OR sk.tujuan LIKE '%$q%'
+               OR sk.instansi LIKE '%$q%'
+               OR sk.kategori LIKE '%$q%'
+               OR sk.perihal LIKE '%$q%'
+            ORDER BY sk.created_at DESC";
 } else {
-    $sql = "SELECT * FROM surat_keluar ORDER BY created_at DESC";
+    $sql = "SELECT sk.*, ks.kode AS kode_surat_kode, ks.nama AS jenis_surat
+            FROM surat_keluar sk
+            LEFT JOIN kode_surat ks ON sk.kode_surat_id = ks.id
+            ORDER BY sk.created_at DESC";
 }
 $surat = mysqli_query($conn, $sql);
 ?>
@@ -33,20 +38,19 @@ $surat = mysqli_query($conn, $sql);
       <i class="fa fa-plus"></i> Tambah Surat Keluar
     </a>
 
-  <form class="d-flex align-items-center" method="get" action="">
-    <input type="text" name="q" value="<?= htmlspecialchars($q); ?>" 
-          class="form-control form-control-sm me-2" 
-          placeholder="Cari surat masuk..." style="max-width:220px;">
-    
-    <button class="btn btn-sm btn-primary me-2" type="submit">
-      <i class="fa fa-search"></i>
-    </button>
-    
-      <a href="export.php?type=surat_keluar" class="btn btn-sm btn-success ">
-      <i class="fa fa-download"></i>
-      </a>
-  </form>
+    <form class="d-flex align-items-center" method="get" action="">
+      <input type="text" name="q" value="<?= htmlspecialchars($q); ?>"
+            class="form-control form-control-sm me-2"
+            placeholder="Cari surat keluar..." style="max-width:220px;">
 
+      <button class="btn btn-sm btn-primary me-2" type="submit">
+        <i class="fa fa-search"></i>
+      </button>
+
+      <a href="export.php?type=surat_keluar" class="btn btn-sm btn-success">
+        <i class="fa fa-download"></i>
+      </a>
+    </form>
   </div>
 
   <div class="card shadow-sm">
@@ -55,15 +59,14 @@ $surat = mysqli_query($conn, $sql);
         <thead class="text-white" style="background: linear-gradient(90deg, #1cc88a, #36b9cc);">
           <tr>
             <th>No</th>
-            <th>No Agenda</th>
             <th>No Surat</th>
+            <th>Kode Surat</th>
             <th>Tgl Surat</th>
             <th>Tujuan</th>
             <th>Instansi</th>
-            <th>Kategori</th>
             <th>Perihal</th>
             <th>Status</th>
-            <th>File</th>
+            <th>QR</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -72,22 +75,30 @@ $surat = mysqli_query($conn, $sql);
             <?php $no=1; while($row=mysqli_fetch_assoc($surat)): ?>
             <tr>
               <td><?= $no++; ?></td>
-              <td><?= htmlspecialchars($row['no_agenda']); ?></td>
               <td><?= htmlspecialchars($row['no_surat']); ?></td>
+              <td>
+                <?php if($row['kode_surat_kode']): ?>
+                  <span class="badge bg-info"><?= htmlspecialchars($row['kode_surat_kode']); ?></span>
+                <?php else: ?>
+                  <span class="text-muted">-</span>
+                <?php endif; ?>
+              </td>
               <td><?= htmlspecialchars($row['tgl_surat']); ?></td>
               <td><?= htmlspecialchars($row['tujuan']); ?></td>
               <td><?= htmlspecialchars($row['instansi']); ?></td>
-              <td><span class="badge bg-info"><?= htmlspecialchars($row['kategori']); ?></span></td>
               <td><?= htmlspecialchars($row['perihal']); ?></td>
               <td>
                 <?= statusBadge($row['status']); ?>
               </td>
-              <td>
-                <?php if($row['file_surat']): ?>
-                  <a href="../assets/uploads/surat_keluar/<?= htmlspecialchars($row['file_surat']); ?>" 
-                     class="btn btn-info btn-sm" target="_blank">Lihat</a>
+              <td class="text-center">
+                <?php if($row['qr_code']): ?>
+                  <a href="../assets/uploads/qr_codes/<?= htmlspecialchars($row['qr_code']); ?>" target="_blank" title="Lihat QR Code">
+                    <img src="../assets/uploads/qr_codes/<?= htmlspecialchars($row['qr_code']); ?>" alt="QR" width="40" height="40" style="border-radius:4px;">
+                  </a>
                 <?php else: ?>
-                  <span class="text-muted">-</span>
+                  <button class="btn btn-sm btn-outline-primary generate-qr" data-id="<?= $row['id']; ?>" title="Generate QR Code">
+                    <i class="fa fa-qrcode"></i>
+                  </button>
                 <?php endif; ?>
               </td>
               <td>
@@ -97,8 +108,8 @@ $surat = mysqli_query($conn, $sql);
                 <a href="surat_keluar_edit.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-warning">
                   <i class="fa fa-edit"></i> Edit
                 </a>
-                <a href="surat_keluar_hapus.php?id=<?= $row['id']; ?>" 
-                   onclick="return confirm('Yakin hapus surat ini?');" 
+                <a href="surat_keluar_hapus.php?id=<?= $row['id']; ?>"
+                   onclick="return confirm('Yakin hapus surat ini?');"
                    class="btn btn-sm btn-danger">
                   <i class="fa fa-trash"></i> Hapus
                 </a>
@@ -107,7 +118,7 @@ $surat = mysqli_query($conn, $sql);
             <?php endwhile; ?>
           <?php else: ?>
             <tr>
-              <td colspan="11" class="text-center text-muted">Tidak ada data surat keluar.</td>
+              <td colspan="10" class="text-center text-muted">Tidak ada data surat keluar.</td>
             </tr>
           <?php endif; ?>
         </tbody>
@@ -115,5 +126,32 @@ $surat = mysqli_query($conn, $sql);
     </div>
   </div>
 </div>
+
+<script>
+document.querySelectorAll('.generate-qr').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var id = this.getAttribute('data-id');
+        var btnEl = this;
+        btnEl.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+        btnEl.disabled = true;
+
+        fetch('../generate_qr.php?id=' + id)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    var td = btnEl.parentElement;
+                    td.innerHTML = '<a href="../assets/uploads/qr_codes/' + data.qr + '" target="_blank" title="Lihat QR Code"><img src="../assets/uploads/qr_codes/' + data.qr + '" alt="QR" width="40" height="40" style="border-radius:4px;"></a>';
+                } else {
+                    btnEl.innerHTML = '<i class="fa fa-qrcode"></i> Gagal';
+                    btnEl.disabled = false;
+                }
+            })
+            .catch(function() {
+                btnEl.innerHTML = '<i class="fa fa-qrcode"></i> Error';
+                btnEl.disabled = false;
+            });
+    });
+});
+</script>
 
 <?php include "../includes/footer.php"; ?>
