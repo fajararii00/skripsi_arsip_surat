@@ -28,20 +28,7 @@ $jml_masuk = $total_masuk;
 $jml_keluar = $total_keluar;
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard Admin - Arsip Surat</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { background-color: #f9fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    .navbar-custom { background: linear-gradient(90deg, #4e73df, #1cc88a); }
-    .navbar-brand { font-weight: bold; letter-spacing: 1px; color: #fff !important; }
-    .nav-link { color: #f8f9fc !important; margin-right: 10px; }
-    .nav-link.active, .nav-link:hover { font-weight: bold; color: #fff !important; }
-
+<style>
     .card-custom { border: none; border-radius: 1rem; transition: transform .2s; }
     .card-custom:hover { transform: translateY(-5px); }
     .card-title { font-weight: 600; font-size: 1.05rem; }
@@ -51,9 +38,8 @@ $jml_keluar = $total_keluar;
     .bg-masuk { background: linear-gradient(45deg,#1cc88a,#17a673); }
     .bg-keluar { background: linear-gradient(45deg,#f6c23e,#dda20a); }
     .bg-disposisi { background: linear-gradient(45deg,#e74a3b,#be2617); }
-  </style>
-</head>
-<body>
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="container mt-4">
   <h2 class="mb-4 fw-bold">Dashboard Admin</h2>
@@ -144,5 +130,4 @@ new Chart(document.getElementById('chartPerbandingan'), {
 });
 </script>
 
-</body>
-</html>
+<?php include "../includes/footer.php"; ?>

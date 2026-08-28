@@ -39,6 +39,10 @@ if ($type == 'surat_keluar') {
         if ($row['file_surat']) {
             $file_url = "assets/uploads/surat_keluar/" . $row['file_surat'];
         }
+        $qr_code_url = '';
+        if ($row['qr_code']) {
+            $qr_code_url = "assets/uploads/qr_codes/" . $row['qr_code'];
+        }
         $qr = mysqli_query($conn, "SELECT nama FROM users WHERE id='" . intval($row['pembuat_id']) . "'");
         $pr = mysqli_fetch_assoc($qr);
         $pembuat_nama = $pr['nama'] ?? '-';
@@ -94,13 +98,17 @@ if (!$row) {
 }
 
 $msg = '';
-// Admin mengubah status
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $_SESSION['role'] == 'admin') {
+// Ubah status sesuai izin role
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $new_status   = mysqli_real_escape_string($conn, $_POST['status']);
     $keterangan   = trim(mysqli_real_escape_string($conn, $_POST['keterangan'] ?? ''));
 
     $steps = getStatusSteps();
-    if (array_key_exists($new_status, $steps)) {
+    if (!array_key_exists($new_status, $steps)) {
+        $msg = "Status tidak valid.";
+    } elseif (!canTransition($_SESSION['role'], $type, $status, $new_status)) {
+        $msg = "Role Anda tidak diizinkan melakukan perubahan status ini.";
+    } else {
         $table = $type;
         $upd = "UPDATE `$table` SET status='$new_status' WHERE id=$id";
         if (mysqli_query($conn, $upd)) {
@@ -125,13 +133,12 @@ $status = $row['status'];
 $history = getStatusHistory($conn, $type, $id);
 $current_idx = getStatusIndex($status);
 $steps = getStatusSteps();
-$next_status = getNextStatus($status);
 
 // Pilih header sesuai role
-if ($_SESSION['role'] == 'staf') {
-    include "includes/header_staf.php";
-} elseif ($_SESSION['role'] == 'user') {
-    include "includes/header_user.php";
+if ($_SESSION['role'] == 'pimpinan') {
+    include "includes/header_pimpinan.php";
+} elseif ($_SESSION['role'] == 'tata_usaha') {
+    include "includes/header_tata_usaha.php";
 } else {
     include "includes/header.php";
 }
@@ -141,7 +148,7 @@ if ($_SESSION['role'] == 'staf') {
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h3 class="fw-bold mb-0"><?= $judul; ?></h3>
     <?php
-    $role_dir = $_SESSION['role'] == 'admin' ? 'admin' : ($_SESSION['role'] == 'staf' ? 'staf' : 'user');
+    $role_dir = $_SESSION['role'] == 'admin' ? 'admin' : ($_SESSION['role'] == 'pimpinan' ? 'pimpinan' : 'tata_usaha');
     $list_map = [
         'surat_keluar' => 'surat_keluar.php',
         'surat_masuk'  => 'surat_masuk.php',
@@ -181,6 +188,15 @@ if ($_SESSION['role'] == 'staf') {
             <a href="<?= htmlspecialchars($file_url); ?>" target="_blank" class="btn btn-info btn-sm text-white">
               <i class="fa fa-eye"></i> Lihat File
             </a>
+          </div>
+        <?php endif; ?>
+        <?php if ($qr_code_url): ?>
+          <div class="col-md-12 mb-2">
+            <strong>QR Code Legalitas:</strong><br>
+            <a href="<?= htmlspecialchars($qr_code_url); ?>" target="_blank">
+              <img src="<?= htmlspecialchars($qr_code_url); ?>" alt="QR Code" width="100" height="100" style="border-radius:8px; border:2px solid #e9ecef;">
+            </a>
+            <small class="text-muted d-block mt-1">Klik untuk melihat QR code ukuran penuh</small>
           </div>
         <?php endif; ?>
       </div>
@@ -245,18 +261,22 @@ if ($_SESSION['role'] == 'staf') {
       </div>
     </div>
 
-    <!-- Form ubah status (khusus admin) -->
+    <!-- Form ubah status (sesuai izin role) -->
     <div class="col-md-5">
-      <?php if ($_SESSION['role'] == 'admin'): ?>
+      <?php
+      $allowed_next = getNextAllowedStatuses($_SESSION['role'], $type, $status);
+      if (count($allowed_next) > 0):
+      ?>
         <div class="card shadow-sm mb-4">
           <div class="card-header fw-semibold"><i class="fa fa-edit"></i> Ubah Status</div>
           <div class="card-body">
+            <p class="text-muted small">Tahap berikutnya yang bisa Anda pilih:</p>
             <form method="POST">
               <div class="mb-3">
                 <label class="form-label">Status</label>
                 <select name="status" class="form-select" required>
-                  <?php foreach ($steps as $key => $label): ?>
-                    <option value="<?= $key; ?>" <?= $key == $status ? 'selected' : ''; ?>><?= $label; ?></option>
+                  <?php foreach ($allowed_next as $key): ?>
+                    <option value="<?= $key; ?>"><?= getStatusLabel($key); ?></option>
                   <?php endforeach; ?>
                 </select>
               </div>
@@ -268,20 +288,13 @@ if ($_SESSION['role'] == 'staf') {
                 <i class="fa fa-save"></i> Simpan Perubahan
               </button>
             </form>
-            <?php if ($next_status): ?>
-              <hr>
-              <p class="text-muted small mb-2">Langkah berikutnya: <strong><?= getStatusLabel($next_status); ?></strong></p>
-            <?php else: ?>
-              <hr>
-              <p class="text-success mb-0"><i class="fa fa-check-circle"></i> Surat telah selesai diproses.</p>
-            <?php endif; ?>
           </div>
         </div>
       <?php else: ?>
         <div class="card shadow-sm mb-4">
           <div class="card-body text-center text-muted">
             <i class="fa fa-lock fa-2x mb-2 d-block"></i>
-            Hanya admin yang dapat mengubah status.
+            Role Anda tidak dapat mengubah status pada tahap ini.
           </div>
         </div>
       <?php endif; ?>

@@ -5,10 +5,26 @@ include "../includes/db.php";
 // Hapus user jika ada request delete
 if (isset($_GET['hapus'])) {
     $id = intval($_GET['hapus']);
-    mysqli_query($conn, "DELETE FROM users WHERE id=$id");
+
+    if ($id == $_SESSION['user_id']) {
+        $_SESSION['error_message'] = "Tidak dapat menghapus akun yang sedang Anda gunakan.";
+        header("Location: users.php");
+        exit;
+    }
+
+    if (mysqli_query($conn, "DELETE FROM users WHERE id=$id")) {
+        $_SESSION['success_message'] = "User berhasil dihapus.";
+    } else {
+        $_SESSION['error_message'] = "Gagal menghapus user: " . mysqli_error($conn);
+    }
     header("Location: users.php");
     exit;
 }
+
+// Flash message
+$flash_success = $_SESSION['success_message'] ?? '';
+$flash_error   = $_SESSION['error_message'] ?? '';
+unset($_SESSION['success_message'], $_SESSION['error_message']);
 
 // Ambil kata kunci pencarian
 $q = isset($_GET['q']) ? mysqli_real_escape_string($conn, $_GET['q']) : "";
@@ -36,6 +52,19 @@ $users = mysqli_query($conn, $sql);
 <body class="bg-light">
 
 <?php include "../includes/header.php"; ?>
+
+<?php if ($flash_success): ?>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <?= htmlspecialchars($flash_success); ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<?php endif; ?>
+<?php if ($flash_error): ?>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <?= htmlspecialchars($flash_error); ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<?php endif; ?>
 
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
@@ -90,10 +119,12 @@ $users = mysqli_query($conn, $sql);
               <td>
                 <?php if($row['role'] == 'admin'): ?>
                   <span class="badge bg-primary">Admin</span>
-                <?php elseif($row['role'] == 'staf'): ?>
-                  <span class="badge bg-success">Staf</span>
+                <?php elseif($row['role'] == 'pimpinan'): ?>
+                  <span class="badge bg-success">Pimpinan</span>
+                <?php elseif($row['role'] == 'tata_usaha'): ?>
+                  <span class="badge bg-warning text-dark">Tata Usaha</span>
                 <?php else: ?>
-                  <span class="badge bg-warning text-dark">User</span>
+                  <span class="badge bg-secondary"><?= htmlspecialchars($row['role']); ?></span>
                 <?php endif; ?>
               </td>
               <td>
@@ -121,5 +152,4 @@ $users = mysqli_query($conn, $sql);
   </div>
 </div>
 
-</body>
-</html>
+<?php include "../includes/footer.php"; ?>

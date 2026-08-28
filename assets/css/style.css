@@ -1,0 +1,186 @@
+/* =====================================================
+   Arsip Surat - Gaya Tabel Modern
+   ===================================================== */
+
+/* --- Kartu pembungkus tabel --- */
+.card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 .4rem 1.2rem rgba(30, 60, 114, .08) !important;
+}
+
+.card > .card-body {
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+
+/* Tabel panjang: bisa di-scroll vertikal, header tetap di atas */
+.card > .card-body:has(> table) {
+  max-height: 68vh;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-top: 0;
+}
+
+/* --- Judul halaman (h3) --- */
+.container h3.fw-bold {
+  position: relative;
+  display: inline-block;
+  padding-bottom: .4rem;
+  margin-bottom: 1.2rem;
+}
+
+.container h3.fw-bold::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 46px;
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #4e73df, #1cc88a);
+}
+
+/* --- Tabel utama --- */
+.table.table-bordered.table-striped {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: .75rem;
+  margin-bottom: 0;
+  background-color: #fff;
+}
+
+/* Kepala tabel */
+.table.table-bordered.table-striped thead {
+  background: linear-gradient(135deg, #4e73df 0%, #1cc88a 100%) !important;
+}
+
+.table.table-bordered.table-striped thead th {
+  background-color: #4e73df !important;
+  background-image: linear-gradient(135deg, #4e73df 0%, #1cc88a 100%);
+  color: #fff !important;
+  font-weight: 600;
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: .85rem .9rem;
+  border: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.table.table-bordered.table-striped thead th:first-child {
+  border-top-left-radius: .75rem;
+}
+
+.table.table-bordered.table-striped thead th:last-child {
+  border-top-right-radius: .75rem;
+}
+
+.table.table-bordered.table-striped tbody tr:last-child td:first-child {
+  border-bottom-left-radius: .75rem;
+}
+
+.table.table-bordered.table-striped tbody tr:last-child td:last-child {
+  border-bottom-right-radius: .75rem;
+}
+
+/* Sel isi tabel */
+.table.table-bordered.table-striped tbody td {
+  padding: .8rem .9rem;
+  font-size: .875rem;
+  vertical-align: middle;
+  border-color: #edf0f6;
+}
+
+/* Zebra + hover */
+.table.table-bordered.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f9fafd;
+}
+
+.table.table-bordered.table-striped tbody tr {
+  transition: background-color .15s ease;
+}
+
+.table.table-bordered.table-striped tbody tr:hover {
+  background-color: #eef2ff;
+  box-shadow: inset 4px 0 0 #4e73df;
+}
+
+.table.table-bordered.table-striped tbody tr:hover td {
+  background-color: transparent;
+}
+
+/* Kolom Perihal: teks panjang dibungkus ke bawah, tidak dipotong */
+.table.table-bordered.table-striped tbody td:nth-child(8) {
+  white-space: normal !important;
+  word-wrap: break-word;
+  min-width: 170px;
+}
+
+/* Baris kosong / tanpa data */
+.table.table-bordered.table-striped tbody tr td[colspan] {
+  padding: 2rem;
+  font-style: italic;
+  color: #94a3b8;
+}
+
+/* --- Badge status / kategori --- */
+.badge {
+  font-size: .72rem;
+  font-weight: 600;
+  padding: .45em .75em;
+  border-radius: .55rem;
+}
+
+.badge.bg-info {
+  background: #0dcaf0 !important;
+}
+
+/* --- Tombol aksi di dalam tabel --- */
+.table .btn {
+  font-size: .74rem;
+  font-weight: 500;
+  border-radius: .5rem;
+  padding: .35rem .65rem;
+  white-space: nowrap;
+}
+
+.table .btn i {
+  margin-right: .25rem;
+}
+
+/* --- Kartu header (tracking, laporan) --- */
+.card-header {
+  border-bottom: none;
+  font-weight: 600;
+}
+
+.card-header.text-white {
+  background: linear-gradient(135deg, #4e73df, #1cc88a) !important;
+}
+
+/* --- Responsif: buat tabel bisa digeser di layar kecil --- */
+@media (max-width: 991.98px) {
+  .card > .card-body {
+    padding: .75rem;
+  }
+
+  .table.table-bordered.table-striped thead th {
+    white-space: nowrap;
+  }
+}
+
+/* --- Saat dicetak: tampilkan seluruh tabel tanpa scroll --- */
+@media print {
+  .card > .card-body:has(> table) {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .table.table-bordered.table-striped thead th {
+    position: static;
+  }
+}
