@@ -31,7 +31,24 @@ $inisial   = strtoupper(substr(trim($nama_user), 0, 1));
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="<?= $base_url ?>/assets/css/style.css">
   <style>
-    body { background-color: #f4f6fb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      background-color: #f4f6fb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      position: relative;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: url('<?= $base_url ?>/images.jpg') no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(4px);
+      -webkit-filter: blur(4px);
+      z-index: -1;
+    }
+    .container { position: relative; z-index: 1; }
     .navbar-custom {
       background: linear-gradient(90deg, #17a2b8 0%, #148aa0 50%, #28a745 100%);
       box-shadow: 0 2px 12px rgba(16, 86, 98, .18);

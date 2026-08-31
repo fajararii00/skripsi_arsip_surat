@@ -117,12 +117,18 @@ $surat = mysqli_query($conn, "
                 <?php endif; ?>
               </td>
               <td>
-                <a href="../tracking.php?type=surat_keluar&id=<?= $row['id']; ?>" class="btn btn-sm btn-primary">
-                  <i class="fa fa-route"></i> Tracking
-                </a>
-                <a href="surat_keluar_edit.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-warning">
-                  <i class="fa fa-edit"></i> Edit
-                </a>
+                <?php if($row['status'] == 'selesai'): ?>
+                  <a href="../tracking.php?type=surat_keluar&id=<?= $row['id']; ?>" class="btn btn-sm btn-info">
+                    <i class="fa fa-eye"></i> Detail
+                  </a>
+                <?php else: ?>
+                  <a href="../tracking.php?type=surat_keluar&id=<?= $row['id']; ?>" class="btn btn-sm btn-primary">
+                    <i class="fa fa-route"></i> Tracking
+                  </a>
+                  <a href="surat_keluar_edit.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-warning">
+                    <i class="fa fa-edit"></i> Edit
+                  </a>
+                <?php endif; ?>
               </td>
             </tr>
             <?php endwhile; ?>

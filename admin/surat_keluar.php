@@ -102,17 +102,23 @@ $surat = mysqli_query($conn, $sql);
                 <?php endif; ?>
               </td>
               <td>
-                <a href="../tracking.php?type=surat_keluar&id=<?= $row['id']; ?>" class="btn btn-sm btn-primary">
-                  <i class="fa fa-route"></i> Tracking
-                </a>
-                <a href="surat_keluar_edit.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-warning">
-                  <i class="fa fa-edit"></i> Edit
-                </a>
-                <a href="surat_keluar_hapus.php?id=<?= $row['id']; ?>"
-                   onclick="return confirm('Yakin hapus surat ini?');"
-                   class="btn btn-sm btn-danger">
-                  <i class="fa fa-trash"></i> Hapus
-                </a>
+                <?php if($row['status'] == 'selesai'): ?>
+                  <a href="../tracking.php?type=surat_keluar&id=<?= $row['id']; ?>" class="btn btn-sm btn-info">
+                    <i class="fa fa-eye"></i> Detail
+                  </a>
+                <?php else: ?>
+                  <a href="../tracking.php?type=surat_keluar&id=<?= $row['id']; ?>" class="btn btn-sm btn-primary">
+                    <i class="fa fa-route"></i> Tracking
+                  </a>
+                  <a href="surat_keluar_edit.php?id=<?= $row['id']; ?>" class="btn btn-sm btn-warning">
+                    <i class="fa fa-edit"></i> Edit
+                  </a>
+                  <a href="surat_keluar_hapus.php?id=<?= $row['id']; ?>"
+                     onclick="return confirm('Yakin hapus surat ini?');"
+                     class="btn btn-sm btn-danger">
+                    <i class="fa fa-trash"></i> Hapus
+                  </a>
+                <?php endif; ?>
               </td>
             </tr>
             <?php endwhile; ?>

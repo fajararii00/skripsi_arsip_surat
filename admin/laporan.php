@@ -186,7 +186,7 @@ if ($_SESSION['role'] == 'pimpinan') {
     </div>
     <?php foreach ($count_by_status as $key => $jml): ?>
       <div class="col-md-3">
-        <div class="kartu-status p-3 text-center">
+        <div class="kartu-status p-3 text-center bg-light">
           <h4 class="mb-0 fw-bold"><?= $jml; ?></h4>
           <small><?= htmlspecialchars(getStatusLabel($key)); ?></small>
         </div>
