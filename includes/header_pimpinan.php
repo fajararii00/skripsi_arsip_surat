@@ -44,8 +44,8 @@ $inisial   = strtoupper(substr(trim($nama_user), 0, 1));
       width: 100%; height: 100%;
       background: url('<?= $base_url ?>/images.jpg') no-repeat center center fixed;
       background-size: cover;
-      filter: blur(4px);
-      -webkit-filter: blur(4px);
+      filter: blur(20px);
+      -webkit-filter: blur(20px);
       z-index: -1;
     }
     .container { position: relative; z-index: 1; }
