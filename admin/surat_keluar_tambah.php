@@ -71,11 +71,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     include "../libs/phpqrcode/qrlib.php";
                     $qr_dir = __DIR__ . "/../assets/uploads/qr_codes/";
                     if (!is_dir($qr_dir)) @mkdir($qr_dir, 0777, true);
-                    $base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
-                                . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']);
-                    $base_url = str_replace('/admin/surat_keluar_tambah.php', '', $base_url);
-                    $cek_url = $base_url . '/cek_legalitas.php?id=' . $new_id;
-                    $qr_file = $qr_dir . 'surat_' . $new_id . '.png';
+                    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                                || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+                                || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
+                                ? 'https' : 'http';
+                    $base_path = rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/\\');
+                    $cek_url   = $protocol . '://' . $_SERVER['HTTP_HOST'] . $base_path . '/cek_legalitas.php?id=' . $new_id;
+                    $qr_file   = $qr_dir . 'surat_' . $new_id . '.png';
                     @QRcode::png($cek_url, $qr_file, QR_ECLEVEL_M, 8, 2);
 
                     if (file_exists($qr_file) && filesize($qr_file) > 0) {

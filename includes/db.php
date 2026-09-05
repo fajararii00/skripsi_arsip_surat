@@ -1,4 +1,5 @@
 <?php
+// Konfigurasi Database Lokal (Laragon)
 $host = "localhost";
 $user = "root";
 $pass = "";

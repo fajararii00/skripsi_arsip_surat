@@ -201,7 +201,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `nama`, `email`, `password`, `role`, `created_at`) VALUES
-(1, 'Administrator', 'admin@mail.com', '$2y$10$igdZUclp2zFd7cYGRJG0veopvBNrzD/bcOpELXswkNMtsBL4ZltNu', 'admin', '2025-09-05 04:28:12'),
+(1, 'Administrator', 'admin@mail.com', '$2y$12$5c676ZG0T0hLyw7Rw7Sl/.VaU84jEZEdq85Ij5PxGk.rxeD6YrXKu', 'admin', '2025-09-05 04:28:12'),
 (2, 'Fajar', 'fajar@gmail.com', '$2y$10$t/.QsGLolVQMxO4XRqZ3FOuuxVlxZkfHSW9DBRhJJfUmyl92KUU2C', 'pimpinan', '2025-09-05 16:22:03'),
 (3, 'Tata Usaha', 'tatausaha@mail.com', '$2y$12$F1Il8obtikbpnoC0EvGeE.7GHcxMrBY60kS1fbP/Z1eXRet9Yqb2O', 'tata_usaha', '2026-08-14 00:00:00');
 

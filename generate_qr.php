@@ -17,10 +17,13 @@ if (!is_dir($qr_dir)) {
 }
 
 // Generate QR
-$base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
-            . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']);
-$cek_url = $base_url . '/cek_legalitas.php?id=' . $id;
-$qr_file = $qr_dir . 'surat_' . $id . '.png';
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+            || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
+            ? 'https' : 'http';
+$base_path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+$cek_url   = $protocol . '://' . $_SERVER['HTTP_HOST'] . $base_path . '/cek_legalitas.php?id=' . $id;
+$qr_file   = $qr_dir . 'surat_' . $id . '.png';
 
 @QRcode::png($cek_url, $qr_file, QR_ECLEVEL_M, 8, 2);
 
